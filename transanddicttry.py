@@ -1,4 +1,5 @@
-import telebot
+import telebot 
+
 
 import requests
 from bs4 import BeautifulSoup as bs
@@ -60,13 +61,17 @@ import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-cafc88105725.json'
 
 
-def translatetext(text, src, dest):
+def translatetext(text,*args):
     translator = Translator()
-    result = translator.translate(text, src=src, dest=dest)
-    return result.text
+    if args is None:
+        result = translator.translate(text,src=args[0], dest=args[1])
+        return result.text
+    else:
+        result = translator.translate(text)
+        return result.text
 
-k = translatetext('mummy i want to eat','en','es')
-print(k)
+# k = translatetext('Wilkommen')
+# print(k)
 
 
 def dictionary(word):
@@ -79,13 +84,16 @@ def dictionary(word):
   dict = []
   if m == []:
       m = soup.find('p',class_='spelling-suggestion-text')
-      return [print(mm.text) for mm in m]
+      return [mm.text for mm in m]
   else:
     [dict.append(c.text.split(':')[1].strip()) for c in m]
     return dict
 # structure will be constituded in the following way
 
-token = "5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U"
+# This program is dedicated to the public domain under the CC0 license.
+with open('token.txt', 'r') as f:
+    token = f.read()
+
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
@@ -116,7 +124,9 @@ def help(update: Update, context: CallbackContext):
     """Send a message when the command /help is issued."""
     update.message.reply_text(m_help)
     
-    
+bot = telebot.TeleBot(token)
+
+@bot.message_handler(commands=['dictionary'])
 def dictitele(update: Update, context: CallbackContext):
     
     # update.send_message(update.chat.id, 'Give me the word YOu want to see definition')
@@ -125,14 +135,33 @@ def dictitele(update: Update, context: CallbackContext):
     # replytext = update.message.text
     replytext = 'Give me the word You want to see definition'
     context.bot.send_message(chat_id, replytext, reply_to_message_id=message_id)
-    context.bot.register_next_step_handler(update.message, sendd_message)
+    # context.bot.register_next_step_handler(update.message, sendd_message_dict)
     """Send a message when the command /help is issued."""
-def sendd_message(update: Update, context: CallbackContext):
+
+@bot.message_handler()
+def sendd_message_dict(update: Update, context: CallbackContext):
     replytext = dictionary(update.message.text)
     update.message.reply_text(replytext)
+
+
+@bot.message_handler(commands=['translate'])
 def translatetele(update: Update, context : CallbackContext):
-  replytext = 'Give the source language then destination language and at least your text that want to translete'
-  update.message.reply_text(replytext,reply_markup=markup)
+    
+    replytext = 'Give the source language then destination language and at least your text that want to translete'
+    m_id = update.message.message_id
+    context.bot.send_message(replytext, reply_to_message_id=m_id)
+    # context.bot.register_next_step_handler(update.message, send_to_trans, message_id = m_id)
+
+def send_to_trans(update: Update, context: CallbackContext):
+  replytextt = translatetext(update.message.text,)
+  update.message.reply_text(replytextt)
+
+
+
+
+
+
+
 
 
 
@@ -149,8 +178,10 @@ def main():
 
     # dispatcher.add_handler(CommandHandler("practiceword", create_audio_word))
     # dispatcher.add_handler(CommandHandler("practicenumber", create_audio_number))
-    dispatcher.add_handler(CommandHandler("dictionary", dictitele))
-    dispatcher.add_handler(MessageHandler(Filters.text, sendd_message))
+    # dispatcher.add_handler(CommandHandler('translate', translatetele) )
+
+    # dispatcher.add_handler(CommandHandler("dictionary", dictitele))
+    # dispatcher.add_handler(MessageHandler(Filters.text, sendd_message_dict))
     # dispatcher.add_handler(CommandHandler("translate", translatetext))
 
     updater.start_polling()
