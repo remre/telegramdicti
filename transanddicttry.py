@@ -98,6 +98,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 
+IN, out = range(2)
 
 m_help = "You can use the following commands:\n"\
 "/practiceword : First select the destination language then select the right answer\n"\
@@ -110,47 +111,61 @@ level = ['en','de','es']
 
 markup = ReplyKeyboardMarkup(level, one_time_keyboard=True)
 
+
+# bot = telebot.TeleBot(token)
+
+# @bot.message_handler(commands=['start'])
 def start(update: Update, context: CallbackContext):
 
     """Start the conversation and ask user for input."""
     update.message.reply_text(
     "Hi! My name is Doctor Botter. I will hold a more complex conversation with you. "
     "Why don't you tell me something about yourself?",
-    
 )
 
-
+# @bot.message_handler(commands=['help'])
 def help(update: Update, context: CallbackContext):
     """Send a message when the command /help is issued."""
     update.message.reply_text(m_help)
     
-bot = telebot.TeleBot(token)
 
-@bot.message_handler(commands=['dictionary'])
+
+# @bot.message_handler(commands=['dictionary'])
 def dictitele(update: Update, context: CallbackContext):
     
-    # update.send_message(update.chat.id, 'Give me the word YOu want to see definition')
+    
     message_id = update.message.message_id
-    chat_id = update.message.chat.id
+    # chat_id = update.message.chat.id
+
+    
     # replytext = update.message.text
     replytext = 'Give me the word You want to see definition'
-    context.bot.send_message(chat_id, replytext, reply_to_message_id=message_id)
+    update.message.reply_text(replytext, reply_to_message_id = message_id)
+    # update.message.reply_to_message(replytext, reply_to_message_id=message_id)
     # context.bot.register_next_step_handler(update.message, sendd_message_dict)
     """Send a message when the command /help is issued."""
-
-@bot.message_handler()
+    return out
+# @bot.message_handler(content_types=['text'])
 def sendd_message_dict(update: Update, context: CallbackContext):
     replytext = dictionary(update.message.text)
     update.message.reply_text(replytext)
 
 
-@bot.message_handler(commands=['translate'])
+# @bot.message_handler(commands=['translate'])
+
+
+
+
+
+
+
 def translatetele(update: Update, context : CallbackContext):
     
     replytext = 'Give the source language then destination language and at least your text that want to translete'
     m_id = update.message.message_id
-    context.bot.send_message(replytext, reply_to_message_id=m_id)
-    # context.bot.register_next_step_handler(update.message, send_to_trans, message_id = m_id)
+    update.message.reply_text(replytext, reply_to_message_id=m_id)
+    # bot.register_next_step_handler(update.message, send_to_trans, message_id = m_id)
+    return IN
 
 def send_to_trans(update: Update, context: CallbackContext):
   replytextt = translatetext(update.message.text,)
@@ -158,7 +173,10 @@ def send_to_trans(update: Update, context: CallbackContext):
 
 
 
-
+def cancel(update, context):
+    ''' to cancel the conversation'''
+    update.message.reply_text('Thank you! I hope we can talk again some day.\n')
+    return ConversationHandler.END
 
 
 
@@ -180,20 +198,45 @@ def main():
     # dispatcher.add_handler(CommandHandler("practicenumber", create_audio_number))
     # dispatcher.add_handler(CommandHandler('translate', translatetele) )
 
+
+
+
+    conv_handler = ConversationHandler (
+        entry_points=[CommandHandler('translate', translatetele)],
+
+        states={
+            IN: [MessageHandler(Filters.text , send_to_trans)],
+            
+        },
+
+        fallbacks=[CommandHandler('cancel', cancel)] ,)
+
+
+    conv_handlerr = ConversationHandler(
+        entry_points=[CommandHandler("dictionary", dictitele)],
+
+        states={
+            out: [MessageHandler(Filters.text, sendd_message_dict)]},
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
+    dispatcher.add_handler(conv_handler)
+    dispatcher.add_handler(conv_handlerr)
     # dispatcher.add_handler(CommandHandler("dictionary", dictitele))
     # dispatcher.add_handler(MessageHandler(Filters.text, sendd_message_dict))
-    # dispatcher.add_handler(CommandHandler("translate", translatetext))
-
     updater.start_polling()
     updater.idle()
     while True:
         schedule.run_pending()
         # The sleep prevents the CPU to work unnecessarily.
         time.sleep(1)
-    updater.idle()
+    # updater.idle()
 
     # Declaration of the schedule
     # schedule.every().day.at(deliver_time).do(job)
+
+
+
 if __name__ == "__main__":
+    # bot.polling()
     main()
-  
