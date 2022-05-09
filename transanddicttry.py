@@ -63,11 +63,57 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/
 
 
 logger = logging.getLogger(__name__)
-level = [['tr'],['de'],['es']]
 
-markup = ReplyKeyboardMarkup(level, one_time_keyboard=True)
+# level = [['tr'],['de'],['es']]
 
+# markup = ReplyKeyboardMarkup(level, one_time_keyboard=True)
 
+# def create_audio_number(number,src,dest):
+
+#   translator = Translator()
+#   p = inflect.engine()
+#   number_w = p.number_to_words(number)
+#   result = translator.translate(number_w, src=src, dest=dest)
+#   # Instantiates a client
+#   client = texttospeech.TextToSpeechClient()
+ 
+#   # Set the text input to be synthesized
+#   synthesis_input = texttospeech.SynthesisInput(text=result.text)
+  
+#   # Build the voice request, select the language code ("en-US") and the ssml
+#   # voice gender ("neutral")
+#   voice = texttospeech.VoiceSelectionParams(
+#     language_code= dest,
+#     ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,)
+
+#   # Select the type of audio file you want returned
+#   audio_config = texttospeech.AudioConfig(
+#     audio_encoding=texttospeech.AudioEncoding.MP3)
+
+#   # Perform the text-to-speech request on the text input with the selected
+#   # voice parameters and audio file type
+#   response = client.synthesize_speech(
+#         request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
+#     )
+
+#   # The response's audio_content is binary.
+#   with open(f'audio/{result.text}.mp3', 'wb') as out:
+#     # Write the response to the output file.
+#     out.write(response.audio_content)
+    
+    
+    
+#   return result.text,number
+
+#   level = input('what is the level of your number exercise:1/2/3 ')
+# if level == '1':
+#     k = np.random.randint(1,100)
+# if level == '2':
+#     k = np.random.randint(100,1000)
+# if level == '3':
+#     k = np.random.randint(1000,1000000)
+    
+# numberpractice,number_button= create_audio_number(f"{k}",'en','de')
 
 
 
@@ -118,7 +164,7 @@ m_help = "You can use the following commands:\n"\
 "/practicenumber : First select the destination language then select the hardness level of the practice then guess the right answer\n"\
 "/dictionary : English dictioanary give the word you want to see definition.\n"\
 "/translate : Translates the text you enter. select destination and source languages \n"\
-
+"/cannel : Cancels the current operation.\n"\
 #one_time_keyboard Requests clients to hide the keyboard as soon as it’s been used. 
 
 
@@ -170,9 +216,15 @@ def sendd_message_dict(update: Update, context: CallbackContext):
 
 
 def translatetele(update: Update, context : CallbackContext):
-    texti = update.message.text
-
-    replytext = '''send the text you want to translate and specify the  then destination language by writing tolang then destination language code like 'en' 'de' 'es' 'tr' 'ar' 'it' \n
+    # keyboard = [
+    #     [
+    #         InlineKeyboardButton("de", callback_data=str(IN)),
+    #         InlineKeyboardButton("es", callback_data=str(IN)),
+    #     ]
+    # ]
+    # reply_markup = InlineKeyboardMarkup(keyboard)
+    # update.message.reply_text("give the dest lang and text", reply_markup=reply_markup)
+    replytext = '''send the text you want to translate and specify the destination language by writing tolang then destination language code like 'en' 'de' 'es' 'tr' 'ar' 'it' \n
     Ex: Life is just a chance to grow a soul tolang en'''
     m_id = update.message.message_id
     update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
@@ -180,18 +232,40 @@ def translatetele(update: Update, context : CallbackContext):
     return IN
 # def destination_language()
 
-# def echo(update: Update, context: CallbackContext):
-#     # update.message.reply_text(update.message.text)
-#     context.user_data['destlang'] = update.message.text
-    
+# def start_handler(update: Update, context):
+#     keyboard = [
+#         [
+#             InlineKeyboardButton("de", callback_data=str(IN)),
+#             InlineKeyboardButton("es", callback_data=str(IN)),
+#         ]
+#     ]
+#     reply_markup = InlineKeyboardMarkup(keyboard)
+#     update.message.reply_text("give the dest lang and text", reply_markup=reply_markup)
 #     return IN
-    
+
+
+
+
 def send_to_trans(update: Update, context: CallbackContext):
     textt = update.message.text
-    destlang = textt.split('tolang ')[1]
-    maintext = textt.split('tolang ')[0] 
-    dest = textt.split()[-1]
-    if destlang == dest:
+    # dest = context.user_data[IN].data
+    # replytextt = translatetext(textt,dest)
+
+    # update.message.reply_text("this is not proper usage but maybe this is the translation you desire to english" + replytextt)
+
+
+    # add if statement to prevent possible errors if the user dont use tolang in message
+    
+    distint = textt.split('tolang ')
+    try:
+        destlang = distint[1]
+        maintext = distint[0]   
+    except:
+        spilit = textt.split()
+        dest = spilit[-1]
+        textlack = " ".join(spilit[:-1])
+    
+    if len(distint) == 2:
 
     # if 'src' in textt:
     #     pass
@@ -205,8 +279,12 @@ def send_to_trans(update: Update, context: CallbackContext):
         replytextt = translatetext(maintext,destlang)
         update.message.reply_text(replytextt)
     else:
-        replytextt = translatetext(maintext)
-        update.message.reply_text("this is not proper usage but maybe this is the translation you desire to english" + replytextt)
+        try:
+            replytextt = "this is not proper usage but maybe this is the translation you desire\n" + translatetext(textlack,dest)
+        except:
+            replytextt = '''You are doing wrong\n
+            Please try again but anyway\n '''
+        update.message.reply_text(replytextt)
     # await query.edit_message_text(replytextt)
     
 
@@ -230,7 +308,7 @@ def main():
 
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help))
-
+    dispatcher.add_handler(CommandHandler('cancel', cancel))
 
 
     # dispatcher.add_handler(CommandHandler("practiceword", create_audio_word))
@@ -245,7 +323,7 @@ def main():
 
         states={
             IN: [MessageHandler(Filters.text , send_to_trans)],
-            # tolang: [MessageHandler(Filters.text,echo)]
+        #    tolang: [MessageHandler(Filters.text,start_handler)]
         },
 
         fallbacks=[CommandHandler('cancel', cancel)] ,)
