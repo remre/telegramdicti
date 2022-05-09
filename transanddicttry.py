@@ -1,3 +1,4 @@
+# from imaplib import _AnyResponseData
 import telebot 
 
 
@@ -61,14 +62,26 @@ import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-cafc88105725.json'
 
 
+logger = logging.getLogger(__name__)
+level = [['tr'],['de'],['es']]
+
+markup = ReplyKeyboardMarkup(level, one_time_keyboard=True)
+
+
+
+
+
 def translatetext(text,*args):
     translator = Translator()
-    if args is None:
-        result = translator.translate(text,src=args[0], dest=args[1])
+    if args != ():
+        if len(args) == 1:
+            result = translator.translate(text, dest=args[0])
+        if len(args) == 2:
+            result = translator.translate(text, src=args[1], dest=args[0])
         return result.text
     else:
         result = translator.translate(text)
-        return result.text
+        return result.text, args
 
 # k = translatetext('Wilkommen')
 # print(k)
@@ -98,7 +111,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 
-IN, out = range(2)
+IN, out, tolang= range(3)
 
 m_help = "You can use the following commands:\n"\
 "/practiceword : First select the destination language then select the right answer\n"\
@@ -106,10 +119,7 @@ m_help = "You can use the following commands:\n"\
 "/dictionary : English dictioanary give the word you want to see definition.\n"\
 "/translate : Translates the text you enter. select destination and source languages \n"\
 
-logger = logging.getLogger(__name__)
-level = ['en','de','es']
-
-markup = ReplyKeyboardMarkup(level, one_time_keyboard=True)
+#one_time_keyboard Requests clients to hide the keyboard as soon as it’s been used. 
 
 
 # bot = telebot.TeleBot(token)
@@ -119,9 +129,10 @@ def start(update: Update, context: CallbackContext):
 
     """Start the conversation and ask user for input."""
     update.message.reply_text(
-    "Hi! My name is Doctor Botter. I will hold a more complex conversation with you. "
-    "Why don't you tell me something about yourself?",
-)
+    """Hi! My name is Doctor LAng. You can go translation or dictionary\n
+     moreover you can practice easy words and numbers""",reply_markup=markup)
+    # return tolang
+
 
 # @bot.message_handler(commands=['help'])
 def help(update: Update, context: CallbackContext):
@@ -158,19 +169,46 @@ def sendd_message_dict(update: Update, context: CallbackContext):
 
 
 
-
 def translatetele(update: Update, context : CallbackContext):
-    
-    replytext = '''Give the source language then destination language and at least your text that want to translete\n
-    add destination language code to the the end of the text'''
+    texti = update.message.text
+
+    replytext = '''send the text you want to translate and specify the  then destination language by writing tolang then destination language code like 'en' 'de' 'es' 'tr' 'ar' 'it' \n
+    Ex: Life is just a chance to grow a soul tolang en'''
     m_id = update.message.message_id
-    update.message.reply_text(replytext, reply_to_message_id=m_id)
+    update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
     # bot.register_next_step_handler(update.message, send_to_trans, message_id = m_id)
     return IN
+# def destination_language()
 
+# def echo(update: Update, context: CallbackContext):
+#     # update.message.reply_text(update.message.text)
+#     context.user_data['destlang'] = update.message.text
+    
+#     return IN
+    
 def send_to_trans(update: Update, context: CallbackContext):
-  replytextt = translatetext(update.message.text,)
-  update.message.reply_text(replytextt)
+    textt = update.message.text
+    destlang = textt.split('tolang ')[1]
+    maintext = textt.split('tolang ')[0] 
+    dest = textt.split()[-1]
+    if destlang == dest:
+
+    # if 'src' in textt:
+    #     pass
+
+    # if 'destlang' in textt:
+    #     pass
+    # query = update.callback_query
+
+    # await textt.answer()
+        # update.message.reply_text(context.user_data['destlang'])
+        replytextt = translatetext(maintext,destlang)
+        update.message.reply_text(replytextt)
+    else:
+        replytextt = translatetext(maintext)
+        update.message.reply_text("this is not proper usage but maybe this is the translation you desire to english" + replytextt)
+    # await query.edit_message_text(replytextt)
+    
 
 
 
@@ -207,7 +245,7 @@ def main():
 
         states={
             IN: [MessageHandler(Filters.text , send_to_trans)],
-            
+            # tolang: [MessageHandler(Filters.text,echo)]
         },
 
         fallbacks=[CommandHandler('cancel', cancel)] ,)
@@ -218,7 +256,7 @@ def main():
 
         states={
             out: [MessageHandler(Filters.text, sendd_message_dict)]},
-        fallbacks=[CommandHandler('cancel', cancel)]
+        fallbacks=[CommandHandler('cancel', cancel)],
     )
 
     dispatcher.add_handler(conv_handler)
