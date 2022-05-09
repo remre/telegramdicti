@@ -161,7 +161,8 @@ def sendd_message_dict(update: Update, context: CallbackContext):
 
 def translatetele(update: Update, context : CallbackContext):
     
-    replytext = 'Give the source language then destination language and at least your text that want to translete'
+    replytext = '''Give the source language then destination language and at least your text that want to translete\n
+    add destination language code to the the end of the text'''
     m_id = update.message.message_id
     update.message.reply_text(replytext, reply_to_message_id=m_id)
     # bot.register_next_step_handler(update.message, send_to_trans, message_id = m_id)
