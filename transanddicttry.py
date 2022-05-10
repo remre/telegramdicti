@@ -124,7 +124,7 @@ def create_audio_number(dest='de',src='en'):
 with open('token.txt', 'r') as f:
     token = f.read()
 
-updater = Updater(token)
+
 
 def translatetext(text,*args):
     translator = Translator()
@@ -171,7 +171,7 @@ m_help = "You can use the following commands:\n"\
 "/practicenumber : First select the destination language then select the hardness level of the practice then guess the right answer\n"\
 "/dictionary : English dictioanary give the word you want to see definition.\n"\
 "/translate : Translates the text you enter. select destination and source languages \n"\
-"/cannel : Cancels the current operation.\n"\
+"/cancel : Cancels the current operation.\n"\
 "/quiz : Answer the quiz.\n"\
 #one_time_keyboard Requests clients to hide the keyboard as soon as it’s been used. 
 
@@ -235,52 +235,24 @@ def translatetele(update: Update, context : CallbackContext):
     update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
     # bot.register_next_step_handler(update.message, send_to_trans, message_id = m_id)
     return IN
-# def destination_language()
-
-# def start_handler(update: Update, context):
-#     keyboard = [
-#         [
-#             InlineKeyboardButton("de", callback_data=str(IN)),
-#             InlineKeyboardButton("es", callback_data=str(IN)),
-#         ]
-#     ]
-#     reply_markup = InlineKeyboardMarkup(keyboard)
-#     update.message.reply_text("give the dest lang and text", reply_markup=reply_markup)
-#     return IN
-
-
 
 
 def send_to_trans(update: Update, context: CallbackContext):
     textt = update.message.text
-    # dest = context.user_data[IN].data
-    # replytextt = translatetext(textt,dest)
-
-    # update.message.reply_text("this is not proper usage but maybe this is the translation you desire to english" + replytextt)
-
-
-    # add if statement to prevent possible errors if the user dont use tolang in message
-    
     distint = textt.split('tolang ')
+
     try:
+
         destlang = distint[1]
         maintext = distint[0]   
     except:
+
         spilit = textt.split()
         dest = spilit[-1]
         textlack = " ".join(spilit[:-1])
     
     if len(distint) == 2:
 
-    # if 'src' in textt:
-    #     pass
-
-    # if 'destlang' in textt:
-    #     pass
-    # query = update.callback_query
-
-    # await textt.answer()
-        # update.message.reply_text(context.user_data['destlang'])
         replytextt = translatetext(maintext,destlang)
         update.message.reply_text(replytextt)
     else:
@@ -301,14 +273,17 @@ def voicetele(update: Update, context: CallbackContext):
     return voc
 
 def answer_with_voice(update: Update, context: CallbackContext):
+    m_id = update.message.message_id
     if len (update.message.text) == 2:
         dest = update.message.text
         answ = create_audio_number(dest)
     else:
         answ = create_audio_number()
+    move_ans = {'audio': answ}
+    context.bot_data.update(move_ans)
     context.bot.send_message(chat_id=update.message.chat.id, text=answ[1])
     # context.bot.send_audio(chat_id=update.message.chat.id, audio=answ[0])
-    # context.bot.send_voice(chat_id=update.effective_chat.id, voice=open('audio/'+k+'.mp3', 'rb'))
+
     return quizans
 
 # def quiztele(update: Update, context: CallbackContext):
@@ -322,9 +297,10 @@ def answer_with_voice(update: Update, context: CallbackContext):
 
 def quizanssfunc(update: Update, context: CallbackContext):
     # random.shuffle()
-
-    answ = answer_with_voice.answ
-    selections = ['ana', 'baba', 'kardas', f'{answ[1]}']
+    #  gonna find a way to take answer from answer_with_voice function
+    move_ans = context.bot_data.get(update.m_id)
+    answer = move_ans.get('audio')
+    selections = ['ana', 'baba', 'kardas', f'{answer[1]}']
     question = 'what is your name?'
     msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=4)
     payload = {
@@ -344,6 +320,7 @@ async def receive_quiz_answer(update: Update, context: CallbackContext) -> None:
         except KeyError:
             return
         await context.bot.stop_poll(quiz_data["chat_id"], quiz_data["message_id"])
+
 # def quizanss(update: Update, context: CallbackContext):
 #     reply = 'Listen audio file what is the right number?'
 #     answer = update.poll_answer
@@ -365,10 +342,9 @@ def cancel(update, context):
 
 def main():
     """Main."""
-
-    
+    updater = Updater(token)
     dispatcher = updater.dispatcher
-
+    # dispatcher.add_handler(MessageHandler(Filters.text, help))
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(CommandHandler('cancel', cancel))
