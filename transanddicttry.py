@@ -36,12 +36,13 @@ from telegram.ext import (
     InlineQueryHandler,
     CallbackContext,
     CallbackQueryHandler,
+    PollHandler,
     ConversationHandler,
 )
 from telegram import (
     ParseMode,
     Bot,
-    
+    Poll,
     Update,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
@@ -69,7 +70,7 @@ logger = logging.getLogger(__name__)
 
 # markup = ReplyKeyboardMarkup(level, one_time_keyboard=True)
 
-def create_audio_number(src='en',dest='de'):
+def create_audio_number(dest='de',src='en'):
 
   number = np.random.randint(1,100)
   translator = Translator()
@@ -120,8 +121,10 @@ def create_audio_number(src='en',dest='de'):
 #     k = np.random.randint(1000,1000000)
     
 # numberpractice,number_button= create_audio_number(f"{k}",'en','de')
+with open('token.txt', 'r') as f:
+    token = f.read()
 
-
+updater = Updater(token)
 
 def translatetext(text,*args):
     translator = Translator()
@@ -156,14 +159,12 @@ def dictionary(word):
 # structure will be constituded in the following way
 
 # This program is dedicated to the public domain under the CC0 license.
-with open('token.txt', 'r') as f:
-    token = f.read()
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 
-IN, out, tolang, voc= range(4)
+IN, out, tolang, voc, quizans= range(5)
 
 m_help = "You can use the following commands:\n"\
 "/practiceword : First select the destination language then select the right answer\n"\
@@ -171,6 +172,7 @@ m_help = "You can use the following commands:\n"\
 "/dictionary : English dictioanary give the word you want to see definition.\n"\
 "/translate : Translates the text you enter. select destination and source languages \n"\
 "/cannel : Cancels the current operation.\n"\
+"/quiz : Answer the quiz.\n"\
 #one_time_keyboard Requests clients to hide the keyboard as soon as it’s been used. 
 
 
@@ -181,8 +183,8 @@ def start(update: Update, context: CallbackContext):
 
     """Start the conversation and ask user for input."""
     update.message.reply_text(
-    """Hi! My name is Doctor LAng. You can go translation or dictionary\n
-     moreover you can practice easy words and numbers""",reply_markup=markup)
+    """Hi! My name is Doctor LAng. You can go translation or dictionary
+moreover you can practice easy words and numbers""",)#reply_markup=markup
     # return tolang
 
 
@@ -293,20 +295,60 @@ def send_to_trans(update: Update, context: CallbackContext):
 
 
 def voicetele(update: Update, context: CallbackContext):
-    replytext = '''send the text you want to translate and specify the destination language b \n'''
+    replytext = '''send the text you want to translate and specify the destination language code like en de it tr es  b \n'''
     m_id = update.message.message_id
     update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
     return voc
 
 def answer_with_voice(update: Update, context: CallbackContext):
-    answ = create_audio_number()
+    if len (update.message.text) == 2:
+        dest = update.message.text
+        answ = create_audio_number(dest)
+    else:
+        answ = create_audio_number()
     # context.bot.send_message(chat_id=update.message.chat.id, text=answ)
     context.bot.send_audio(chat_id=update.message.chat.id, audio=answ)
     # context.bot.send_voice(chat_id=update.effective_chat.id, voice=open('audio/'+k+'.mp3', 'rb'))
+    return quizans
 
+# def quiztele(update: Update, context: CallbackContext):
+#     reply = 'Answer the question next will shown'
+#     m_id = update.message.message_id
+#     update.message.reply_text(reply, reply_to_message_id=m_id,)
+   
+#     # context.bot_data.update(payload)
+#     return quizans
 
+def quizanss(update: Update, context: CallbackContext):
+    # random.shuffle()
+    selections = ['ana', 'baba', 'kardas']
+    question = 'what is your name?'
+    msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=1)
+    payload = {
+    msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
+}
+    context.bot_data.update(payload)
 
-
+async def receive_quiz_answer(update: Update, context: CallbackContext) -> None:
+    """Close quiz after three participants took it"""
+    # the bot can receive closed poll updates we don't care about
+    if update.poll.is_closed:
+        return
+    if update.poll.total_voter_count == 1:
+        try:
+            quiz_data = context.bot_data[update.poll.id]
+        # this means this poll answer update is from an old poll, we can't stop it then
+        except KeyError:
+            return
+        await context.bot.stop_poll(quiz_data["chat_id"], quiz_data["message_id"])
+# def quizanss(update: Update, context: CallbackContext):
+#     reply = 'Listen audio file what is the right number?'
+#     answer = update.poll_answer
+#     answered_poll = context.user_data['poll']
+#     if answer.data == '1':
+#         reply = 'You are right'
+#     else:
+#         reply = 'You are wrong'
 
 def cancel(update, context):
     ''' to cancel the conversation'''
@@ -321,14 +363,14 @@ def cancel(update, context):
 def main():
     """Main."""
 
-    updater = Updater(token)
+    
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(CommandHandler('cancel', cancel))
-
-
+    dispatcher.add_handler(CommandHandler('quiz',quizanss))
+    dispatcher.add_handler(PollHandler(receive_quiz_answer))
     # dispatcher.add_handler(CommandHandler("practiceword", create_audio_word))
     # dispatcher.add_handler(CommandHandler("practicenumber", create_audio_number))
     # dispatcher.add_handler(CommandHandler('translate', translatetele) )
