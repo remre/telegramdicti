@@ -145,17 +145,16 @@ def translatetext(text,*args):
 def dictionary(word):
 
   url_merriam = 'https://www.merriam-webster.com/dictionary/'
-  
   page = requests.get(url_merriam+ word)
   soup = bs(page.content, 'html.parser')
   m = soup.find_all('span', class_='dtText')[:3]
-  dict = []
+
   if m == []:
       m = soup.find('p',class_='spelling-suggestion-text')
       return [mm.text for mm in m]
   else:
-    [dict.append(c.text.split(':')[1].strip()) for c in m]
-    return dict
+    return [c.text.split(':')[1].strip() for c in m]
+    
 # structure will be constituded in the following way
 
 # This program is dedicated to the public domain under the CC0 license.
@@ -245,7 +244,7 @@ def send_to_trans(update: Update, context: CallbackContext):
 
         destlang = distint[1]
         maintext = distint[0]   
-    except:
+    except :
 
         spilit = textt.split()
         dest = spilit[-1]
