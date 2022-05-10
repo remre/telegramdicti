@@ -1,4 +1,5 @@
 # from imaplib import _AnyResponseData
+from email.mime import audio
 import telebot 
 
 
@@ -68,42 +69,47 @@ logger = logging.getLogger(__name__)
 
 # markup = ReplyKeyboardMarkup(level, one_time_keyboard=True)
 
-# def create_audio_number(number,src,dest):
+def create_audio_number(src='en',dest='de'):
 
-#   translator = Translator()
-#   p = inflect.engine()
-#   number_w = p.number_to_words(number)
-#   result = translator.translate(number_w, src=src, dest=dest)
-#   # Instantiates a client
-#   client = texttospeech.TextToSpeechClient()
+  number = np.random.randint(1,100)
+  translator = Translator()
+  p = inflect.engine()
+  number_w = p.number_to_words(number)
+  result = translator.translate(number_w, src=src, dest=dest)
+
+
+
+#   result  = 
+#   Instantiates a client
+  client = texttospeech.TextToSpeechClient()
  
-#   # Set the text input to be synthesized
-#   synthesis_input = texttospeech.SynthesisInput(text=result.text)
+  # Set the text input to be synthesized
+  synthesis_input = texttospeech.SynthesisInput(text=result.text)
   
-#   # Build the voice request, select the language code ("en-US") and the ssml
-#   # voice gender ("neutral")
-#   voice = texttospeech.VoiceSelectionParams(
-#     language_code= dest,
-#     ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,)
+  # Build the voice request, select the language code ("en-US") and the ssml
+  # voice gender ("neutral")
+  voice = texttospeech.VoiceSelectionParams(
+    language_code= dest,
+    ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,)
 
-#   # Select the type of audio file you want returned
-#   audio_config = texttospeech.AudioConfig(
-#     audio_encoding=texttospeech.AudioEncoding.MP3)
+  # Select the type of audio file you want returned
+  audio_config = texttospeech.AudioConfig(
+    audio_encoding=texttospeech.AudioEncoding.MP3)
 
-#   # Perform the text-to-speech request on the text input with the selected
-#   # voice parameters and audio file type
-#   response = client.synthesize_speech(
-#         request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
-#     )
+  # Perform the text-to-speech request on the text input with the selected
+  # voice parameters and audio file type
+  response = client.synthesize_speech(
+        request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
+    )
 
-#   # The response's audio_content is binary.
-#   with open(f'audio/{result.text}.mp3', 'wb') as out:
-#     # Write the response to the output file.
-#     out.write(response.audio_content)
+  # The response's audio_content is binary.
+  with open(f'audio/{result.text}.mp3', 'wb') as out:
+    # Write the response to the output file.
+    out.write(response.audio_content)
     
     
     
-#   return result.text,number
+  return open(f'audio/{result.text}.mp3', 'rb')
 
 #   level = input('what is the level of your number exercise:1/2/3 ')
 # if level == '1':
@@ -127,7 +133,7 @@ def translatetext(text,*args):
         return result.text
     else:
         result = translator.translate(text)
-        return result.text, args
+        return result.text
 
 # k = translatetext('Wilkommen')
 # print(k)
@@ -157,7 +163,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 
-IN, out, tolang= range(3)
+IN, out, tolang, voc= range(4)
 
 m_help = "You can use the following commands:\n"\
 "/practiceword : First select the destination language then select the right answer\n"\
@@ -206,9 +212,6 @@ def dictitele(update: Update, context: CallbackContext):
 def sendd_message_dict(update: Update, context: CallbackContext):
     replytext = dictionary(update.message.text)
     update.message.reply_text(replytext)
-
-
-# @bot.message_handler(commands=['translate'])
 
 
 
@@ -289,6 +292,21 @@ def send_to_trans(update: Update, context: CallbackContext):
     
 
 
+def voicetele(update: Update, context: CallbackContext):
+    replytext = '''send the text you want to translate and specify the destination language b \n'''
+    m_id = update.message.message_id
+    update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
+    return voc
+
+def answer_with_voice(update: Update, context: CallbackContext):
+    answ = create_audio_number()
+    # context.bot.send_message(chat_id=update.message.chat.id, text=answ)
+    context.bot.send_audio(chat_id=update.message.chat.id, audio=answ)
+    # context.bot.send_voice(chat_id=update.effective_chat.id, voice=open('audio/'+k+'.mp3', 'rb'))
+
+
+
+
 
 def cancel(update, context):
     ''' to cancel the conversation'''
@@ -319,10 +337,11 @@ def main():
 
 
     conv_handler = ConversationHandler (
-        entry_points=[CommandHandler('translate', translatetele)],
+        entry_points=[CommandHandler('translate', translatetele),CommandHandler('voice', voicetele)],
 
         states={
             IN: [MessageHandler(Filters.text , send_to_trans)],
+            voc: [MessageHandler(Filters.text,answer_with_voice  )]
         #    tolang: [MessageHandler(Filters.text,start_handler)]
         },
 
