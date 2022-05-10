@@ -110,7 +110,7 @@ def create_audio_number(dest='de',src='en'):
     
     
     
-  return open(f'audio/{result.text}.mp3', 'rb')
+  return open(f'audio/{result.text}.mp3', 'rb'), result.text
 
 #   level = input('what is the level of your number exercise:1/2/3 ')
 # if level == '1':
@@ -306,24 +306,27 @@ def answer_with_voice(update: Update, context: CallbackContext):
         answ = create_audio_number(dest)
     else:
         answ = create_audio_number()
-    # context.bot.send_message(chat_id=update.message.chat.id, text=answ)
-    context.bot.send_audio(chat_id=update.message.chat.id, audio=answ)
+    context.bot.send_message(chat_id=update.message.chat.id, text=answ[1])
+    # context.bot.send_audio(chat_id=update.message.chat.id, audio=answ[0])
     # context.bot.send_voice(chat_id=update.effective_chat.id, voice=open('audio/'+k+'.mp3', 'rb'))
     return quizans
 
 # def quiztele(update: Update, context: CallbackContext):
-#     reply = 'Answer the question next will shown'
-#     m_id = update.message.message_id
-#     update.message.reply_text(reply, reply_to_message_id=m_id,)
-   
-#     # context.bot_data.update(payload)
-#     return quizans
+#     selections = ['ana', 'baba', 'kardas']
+#     question = 'what is your name?'
+#     msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=1)
+#     payload = {
+#     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
+# }
+#     context.bot_data.update(payload)
 
-def quizanss(update: Update, context: CallbackContext):
+def quizanssfunc(update: Update, context: CallbackContext):
     # random.shuffle()
-    selections = ['ana', 'baba', 'kardas']
+
+    answ = answer_with_voice.answ
+    selections = ['ana', 'baba', 'kardas', f'{answ[1]}']
     question = 'what is your name?'
-    msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=1)
+    msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=4)
     payload = {
     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
 }
@@ -369,8 +372,14 @@ def main():
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(CommandHandler('cancel', cancel))
-    dispatcher.add_handler(CommandHandler('quiz',quizanss))
+    # dispatcher.add_handler(
+    dispatcher.add_handler(CommandHandler('quiz',quizanssfunc))
+
+
+
     dispatcher.add_handler(PollHandler(receive_quiz_answer))
+
+
     # dispatcher.add_handler(CommandHandler("practiceword", create_audio_word))
     # dispatcher.add_handler(CommandHandler("practicenumber", create_audio_number))
     # dispatcher.add_handler(CommandHandler('translate', translatetele) )
@@ -380,10 +389,11 @@ def main():
 
     conv_handler = ConversationHandler (
         entry_points=[CommandHandler('translate', translatetele),CommandHandler('voice', voicetele)],
-
+        # CommandHandler('quizvoice',answer_with_voice)
         states={
             IN: [MessageHandler(Filters.text , send_to_trans)],
-            voc: [MessageHandler(Filters.text,answer_with_voice  )]
+            voc: [MessageHandler(Filters.text,answer_with_voice )],
+            quizans : [CommandHandler('quizz',quizanssfunc)],
         #    tolang: [MessageHandler(Filters.text,start_handler)]
         },
 
