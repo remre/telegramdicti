@@ -120,11 +120,11 @@ def create_audio_word(dest='de',src='en'):
 
 
 def create_audio_number(number,dest='de',src='en'):
-    number  = number_level(number)
+    numberr  = number_level(str(number))
     # number = np.random.randint(10,1000)
     translator = Translator()
     p = inflect.engine()
-    number_w = p.number_to_words(number)
+    number_w = p.number_to_words(numberr)
     result = translator.translate(number_w, src=src, dest=dest)
     #   Instantiates a client
     client = texttospeech.TextToSpeechClient()
@@ -149,13 +149,13 @@ def create_audio_number(number,dest='de',src='en'):
         )
 
     # The response's audio_content is binary.
-    with open('audio/question1.mp3', 'wb') as out:
+    with open('audio/NumberQuestion.mp3', 'wb') as out:
         # Write the response to the output file.
         out.write(response.audio_content)
         
         
         
-    return open('audio/question1.mp3', 'rb'), result.text
+    return open('audio/NumberQuestion.mp3', 'rb'), result.text
 
 # level = input('what is the level of your number exercise:1/2/3 ')
 
@@ -265,7 +265,7 @@ def translatetele(update: Update, context : CallbackContext):
     # reply_markup = InlineKeyboardMarkup(keyboard)
     # update.message.reply_text("give the dest lang and text", reply_markup=reply_markup)
     replytext = '''send the text you want to translate and specify the destination language by writing * then destination language code like 'en' 'de' 'es' 'tr' 'ar' 'it' \n
-    Ex: Life is just a chance to grow a soul * de'''
+    Ex: Life is just a chance to grow a soul * de\n see more lang code here https://developers.google.com/admin-sdk/directory/v1/languages'''
     m_id = update.message.message_id
     update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
     # bot.register_next_step_handler(update.message, send_to_trans, message_id = m_id)
@@ -330,40 +330,6 @@ will  guess the right answer. Let's go! Ex: es 3'''
     return voc
 
 answers = {'number':'', 'words':''}
-
-async def answer_with_voice(update: Update, context: CallbackContext):
-    global answers
-    m_id = update.message.message_id
-    textt = update.message.text.split(' ')
-    if len(textt)==2:
-
-        if len (textt[0]) == 2:
-            hardness = number_level(textt[1])
-            dest = (update.message.text).lower()
-            # if type(hardness) == int:
-            #     answers['number'] = create_audio_number(hardness,dest)
-            # else:
-            answers['number'] = create_audio_number(dest)
-        else:
-            answers['number'] = create_audio_number()
-    # move_ans = {'audio': answ}
-    # context.bot_data.update(move_ans)
-    # context.bot.send_message(chat_id=update.message.chat.id, text=answers['number'][1])
-
-    # context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0])
-    query = update.callback_query
-    await query.answer()
-    keyboard = [
-        [
-            InlineKeyboardButton("Yes, let's do it again!", callback_data=str(quizans)),
-            InlineKeyboardButton("Nah, I've had enough ...", callback_data=str(goback)),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.edit_message_text(text="Third CallbackQueryHandler. Do want to start over?", reply_markup=reply_markup)
-    return Quizroutes
-
-
 def number_level(number):
 
     if number == '1':
@@ -373,9 +339,41 @@ def number_level(number):
     if number == '3':
         k = np.random.randint(1000,10000)
     if re.match('[1-3]',str(number)) is None:
-
         k = 'You need to give 1,2,3 as level nothing else'
     return k
+
+def answer_with_voice(update: Update, context: CallbackContext):
+    global answers
+    m_id = update.message.message_id
+    textt = update.message.text.split(' ')
+    if len(textt)==2:
+
+        if len (textt[0]) == 2:
+            hardness = (textt[1])
+            dest = (textt[0]).lower()
+
+            answers['number'] = create_audio_number(hardness,dest)
+        else:
+            answers['number'] = create_audio_number()
+    # move_ans = {'audio': answ}
+    # context.bot_data.update(move_ans)
+    # context.bot.send_message(chat_id=update.message.chat.id, text=answers['number'][1])
+
+    context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0])
+    # query  = update.callback_query
+    # await query.answer()
+    # keyboard = [
+    #     [
+    #         InlineKeyboardButton("Yes, let's do it again!", callback_data=str(quizans)),
+    #         InlineKeyboardButton("Nah, I've had enough ...", callback_data=str(goback)),
+    #     ]
+    # ]
+    # reply_markup = InlineKeyboardMarkup(keyboard)
+    # await query.edit_message_text(text="Third CallbackQueryHandler. Do want to start over?", reply_markup=reply_markup)
+    return quizans
+
+
+
 # solve the number level function problem and throw it to the right function and return the answer
 # we need to run create_audio_number function just one time 
 def quiztele(update: Update, context: CallbackContext):
@@ -462,19 +460,25 @@ def main():
     # dispatcher.add_handler(CommandHandler('translate', translatetele) )
 
 
-
-
-    conv_handler = ConversationHandler (
-        entry_points=[CommandHandler('translate', translatetele),CommandHandler('practicenumber', voicetele)],
+    translator_conv = ConversationHandler (
+        entry_points=[CommandHandler('translate', translatetele)],
         # CommandHandler('quizvoice',answer_with_voice)
         states={
-            IN: [MessageHandler(Filters.text , send_to_trans)],
-            voc: [MessageHandler(Filters.text, answer_with_voice)],
+            IN: [MessageHandler(Filters.text , send_to_trans)]
             #make it message handler with level 
-            Quizroutes: [
-            CallbackQueryHandler(quiztele,pattern="^"+str(quizans)+"$"),
-            CallbackQueryHandler(voicetele,pattern="^"+str(goback)+"$"), 
-            ],
+           
+        },
+
+        fallbacks=[CommandHandler('cancel', cancel)] ,)
+
+    conv_handler = ConversationHandler (
+        entry_points=[CommandHandler('practicenumber', voicetele)],
+        # CommandHandler('quizvoice',answer_with_voice)
+        states={
+            voc: [MessageHandler(Filters.text, answer_with_voice)],
+            quizans : [MessageHandler(Filters.text, quiztele)]
+            #make it message handler with level 
+           
         },
         #    tolang: [MessageHandler(Filters.text,start_handler)]},
 
@@ -488,9 +492,13 @@ def main():
             out: [MessageHandler(Filters.text, sendd_message_dict)]},
         fallbacks=[CommandHandler('cancel', cancel)],
     )
-
+    dispatcher.add_handler(translator_conv)
     dispatcher.add_handler(conv_handler)
     dispatcher.add_handler(conv_handlerr)
+    # dispatcher.add_handler(#Quizroutes: [
+            # CallbackQueryHandler(quiztele,pattern="^"+str(quizans)+"$"),
+            # CallbackQueryHandler(voicetele,pattern="^"+str(goback)+"$"), 
+        #    ) #],
     # dispatcher.add_handler(CommandHandler("dictionary", dictitele))
     # dispatcher.add_handler(MessageHandler(Filters.text, sendd_message_dict))
     updater.start_polling()
@@ -505,7 +513,7 @@ def main():
     # schedule.every().day.at(deliver_time).do(job)
 
 
-
+# DispatcherHandlerStop
 if __name__ == "__main__":
     # bot.polling()
     main()
