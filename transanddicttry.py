@@ -181,16 +181,17 @@ def translatetext(text,*args):
 
 def dictionary(word):
 
-  url_merriam = 'https://www.merriam-webster.com/dictionary/'
-  page = requests.get(url_merriam+ word)
-  soup = bs(page.content, 'html.parser')
-  m = soup.find_all('span', class_='dtText')[:3]
+    url_merriam = 'https://www.merriam-webster.com/dictionary/'
+    page = requests.get(url_merriam+ word)
+    soup = bs(page.content, 'html.parser')
+    m = soup.find_all('span', class_='dtText')[:3]
 
-  if m == []:
-    words = soup.find('p',class_='spelling-suggestion-text')
-    return [w.text for w in words]
-  else:
-    dictt= [c.text.split(':')[1].strip() for c in m]
+    if m == []:
+        words = soup.find('p',class_='spelling-suggestion-text')
+        dictt =  [w.text for w in words]
+    else:
+        dictt= [c.text.split(':')[1].strip() for c in m]
+
     return (','.join(str(a)for a in dictt))
     
 # structure will be constituded in the following way
@@ -201,7 +202,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 
-IN, out, tolang, voc, quizans, goback,Quizroutes= range(7)
+IN, out, tolang, voc, quizans, goback,Quizroutes, newdict= range(8)
 
 m_help = "You can use the following commands:\n"\
 "/practiceword : First select the destination language then select the right answer\n"\
@@ -252,7 +253,7 @@ def sendd_message_dict(update: Update, context: CallbackContext):
     replytext = dictionary(update.message.text)
     update.message.reply_text(replytext)
 
-
+    
 
 
 def translatetele(update: Update, context : CallbackContext):
@@ -349,12 +350,13 @@ def answer_with_voice(update: Update, context: CallbackContext):
     if len(textt)==2:
 
         if len (textt[0]) == 2:
-            hardness = (textt[1])
-            dest = (textt[0]).lower()
+            hardness = textt[1].strip()
+            dest = textt[0].lower().strip()
 
             answers['number'] = create_audio_number(hardness,dest)
         else:
-            answers['number'] = create_audio_number()
+            context.bot.send_message(chat_id=update.message.chat.id, text="You need to give the language code and the level check the example\n and try again!")
+            return voc
     # move_ans = {'audio': answ}
     # context.bot_data.update(move_ans)
     # context.bot.send_message(chat_id=update.message.chat.id, text=answers['number'][1])
@@ -434,7 +436,14 @@ def cancel(update, context):
     update.message.reply_text('Thank you! I hope we can talk again some day.\n')
     return ConversationHandler.END
 
-
+async def end(update: Update, context: CallbackContext) -> int:
+    """Returns `ConversationHandler.END`, which tells the
+    ConversationHandler that the conversation is over.
+    """
+    query = update.callback_query
+    await query.answer()
+    await query.edit_message_text(text="See you next time!")
+    return ConversationHandler.END
 
 
 
@@ -446,7 +455,7 @@ def main():
     # dispatcher.add_handler(MessageHandler(Filters.text, help))
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help))
-    dispatcher.add_handler(CommandHandler('cancel', cancel))
+    # dispatcher.add_handler(CommandHandler('cancel', cancel))
     # dispatcher.add_handler(
     # dispatcher.add_handler(CommandHandler('quiz',quiztele))
 
@@ -469,27 +478,32 @@ def main():
            
         },
 
-        fallbacks=[CommandHandler('cancel', cancel)] ,)
+        fallbacks=[CommandHandler('help', help)] ,)
 
     conv_handler = ConversationHandler (
         entry_points=[CommandHandler('practicenumber', voicetele)],
         # CommandHandler('quizvoice',answer_with_voice)
         states={
             voc: [MessageHandler(Filters.text, answer_with_voice)],
-            quizans : [MessageHandler(Filters.text, quiztele)]
+            quizans : [MessageHandler(Filters.text, quiztele)],
+            
+            
             #make it message handler with level 
            
         },
         #    tolang: [MessageHandler(Filters.text,start_handler)]},
 
-        fallbacks=[CommandHandler('cancel', cancel)] ,)
+        fallbacks=[CommandHandler('help', help)] ,)
 
 
     conv_handlerr = ConversationHandler(
         entry_points=[CommandHandler("dictionary", dictitele)],
 
         states={
-            out: [MessageHandler(Filters.text, sendd_message_dict)]},
+            out: [MessageHandler(Filters.text, sendd_message_dict)],
+            #, pattern='^([a-z])$'
+        },
+        
         fallbacks=[CommandHandler('cancel', cancel)],
     )
     dispatcher.add_handler(translator_conv)
