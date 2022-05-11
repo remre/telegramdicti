@@ -70,17 +70,53 @@ logger = logging.getLogger(__name__)
 
 # markup = ReplyKeyboardMarkup(level, one_time_keyboard=True)
 
+def wrong_answers_word():
+    pass
 
 
-
-def wrong_answers():
+def wrong_answers_number():
     glob.glob("audio\*.mp3")
     return [file.split('\\')[1].split('.')[0] for file in glob.glob("audio\*.mp3")]
 
-dictt = wrong_answers()
-np.random.shuffle(dictt)
+dictt_answers = wrong_answers_number()
+np.random.shuffle(dictt_answers)
 
+def create_audio_word(dest='de',src='en'):
 
+  translator = Translator()
+  r = RandomWords()
+  word = r.get_random_word()
+  result = translator.translate(word, src=src, dest=dest)
+  # Instantiates a client
+  client = texttospeech.TextToSpeechClient()
+ 
+  # Set the text input to be synthesized
+  synthesis_input = texttospeech.SynthesisInput(text=result.text)
+  
+  # Build the voice request, select the language code ("en-US") and the ssml
+  # voice gender ("neutral")
+  voice = texttospeech.VoiceSelectionParams(
+    language_code= dest,
+    ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,)
+
+  # Select the type of audio file you want returned
+  audio_config = texttospeech.AudioConfig(
+    audio_encoding=texttospeech.AudioEncoding.MP3)
+
+  # Perform the text-to-speech request on the text input with the selected
+  # voice parameters and audio file type
+  response = client.synthesize_speech(
+        request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
+    )
+
+  # The response's audio_content is binary.
+  with open('audio/question_word.mp3', 'wb') as out:
+    # Write the response to the output file.
+    out.write(response.audio_content)
+    
+    
+    
+  return open('audio/question_word.mp3', 'rb'),result.text,word
 
 
 def create_audio_number(number,dest='de',src='en'):
@@ -261,7 +297,27 @@ def send_to_trans(update: Update, context: CallbackContext):
 
     update.message.reply_text(replytextt)
     # await query.edit_message_text(replytextt)
-    
+# def answer_with_voice_word(update: Update, context: CallbackContext):
+#     global answers
+#     m_id = update.message.message_id
+#     textt = update.message.text.split(' ')
+#     if len(textt)==2:
+
+#         if len (textt[0]) == 2:
+#             hardness = number_level(textt[1])
+#             dest = (update.message.text).lower()
+#             # if type(hardness) == int:
+#             #     answers['number'] = create_audio_number(hardness,dest)
+#             # else:
+#             answers['number'] = create_audio_number(dest)
+#         else:
+#             answers['number'] = create_audio_number()
+#     # move_ans = {'audio': answ}
+#     # context.bot_data.update(move_ans)
+#     # context.bot.send_message(chat_id=update.message.chat.id, text=answers['number'][1])
+#     context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0])
+
+#     return quizans  
 
 
 def voicetele(update: Update, context: CallbackContext):
@@ -313,11 +369,11 @@ def number_level(number):
 # solve the number level function problem and throw it to the right function and return the answer
 # we need to run create_audio_number function just one time 
 def quiztele(update: Update, context: CallbackContext):
-    global answers, dictt
+    global answers, dictt_answers
     numberr = update.message.text
     number_answer = answers["number"][1]
     level = update.message.text
-    selections = [dictt[1],dictt[2],dictt[3], f'{number_answer}']
+    selections = [dictt_answers[1],dictt_answers[2],dictt_answers[3], f'{number_answer}']
     number_level(numberr)
     np.random.shuffle(selections)
     correct_id = selections.index(f'{number_answer}')
