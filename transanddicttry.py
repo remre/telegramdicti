@@ -22,7 +22,7 @@ from random_word import RandomWords
 import inflect
 import pandas
 import numpy as np
-
+import glob
 import logging
 from telegram.ext import (
     CommandHandler,
@@ -70,58 +70,63 @@ logger = logging.getLogger(__name__)
 
 # markup = ReplyKeyboardMarkup(level, one_time_keyboard=True)
 
-def create_audio_number(dest='de',src='en'):
-
-  number = np.random.randint(1,100)
-  translator = Translator()
-  p = inflect.engine()
-  number_w = p.number_to_words(number)
-  result = translator.translate(number_w, src=src, dest=dest)
 
 
 
-#   result  = 
-#   Instantiates a client
-  client = texttospeech.TextToSpeechClient()
- 
-  # Set the text input to be synthesized
-  synthesis_input = texttospeech.SynthesisInput(text=result.text)
-  
-  # Build the voice request, select the language code ("en-US") and the ssml
-  # voice gender ("neutral")
-  voice = texttospeech.VoiceSelectionParams(
-    language_code= dest,
-    ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,)
+def wrong_answers():
+    glob.glob("audio\*.mp3")
+    return [file.split('\\')[1].split('.')[0] for file in glob.glob("audio\*.mp3")]
 
-  # Select the type of audio file you want returned
-  audio_config = texttospeech.AudioConfig(
-    audio_encoding=texttospeech.AudioEncoding.MP3)
+dictt = wrong_answers()
+np.random.shuffle(dictt)
 
-  # Perform the text-to-speech request on the text input with the selected
-  # voice parameters and audio file type
-  response = client.synthesize_speech(
-        request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
-    )
 
-  # The response's audio_content is binary.
-  with open(f'audio/{result.text}.mp3', 'wb') as out:
-    # Write the response to the output file.
-    out.write(response.audio_content)
+
+
+def create_audio_number(number,dest='de',src='en'):
+    number  = number_level(number)
+    # number = np.random.randint(10,1000)
+    translator = Translator()
+    p = inflect.engine()
+    number_w = p.number_to_words(number)
+    result = translator.translate(number_w, src=src, dest=dest)
+    #   Instantiates a client
+    client = texttospeech.TextToSpeechClient()
     
+    # Set the text input to be synthesized
+    synthesis_input = texttospeech.SynthesisInput(text=result.text)
     
-    
-  return open(f'audio/{result.text}.mp3', 'rb'), result.text
+    # Build the voice request, select the language code ("en-US") and the ssml
+    # voice gender ("neutral")
+    voice = texttospeech.VoiceSelectionParams(
+        language_code= dest,
+        ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,)
 
-#   level = input('what is the level of your number exercise:1/2/3 ')
-# if level == '1':
-#     k = np.random.randint(1,100)
-# if level == '2':
-#     k = np.random.randint(100,1000)
-# if level == '3':
-#     k = np.random.randint(1000,1000000)
+    # Select the type of audio file you want returned
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.MP3)
+
+    # Perform the text-to-speech request on the text input with the selected
+    # voice parameters and audio file type
+    response = client.synthesize_speech(
+            request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
+        )
+
+    # The response's audio_content is binary.
+    with open('audio/question1.mp3', 'wb') as out:
+        # Write the response to the output file.
+        out.write(response.audio_content)
+        
+        
+        
+    return open('audio/question1.mp3', 'rb'), result.text
+
+# level = input('what is the level of your number exercise:1/2/3 ')
+
+
     
 # numberpractice,number_button= create_audio_number(f"{k}",'en','de')
-with open('token.txt', 'r') as f:
+with open('C:/Users/emreb/Documents/projects/secret/token.txt', 'r') as f:
     token = f.read()
 
 
@@ -133,14 +138,10 @@ def translatetext(text,*args):
             result = translator.translate(text, dest=args[0])
         if len(args) == 2:
             result = translator.translate(text, src=args[1], dest=args[0])
-        return result.text
     else:
         result = translator.translate(text)
-        return result.text
 
-# k = translatetext('Wilkommen')
-# print(k)
-
+    return result.text
 
 def dictionary(word):
 
@@ -150,10 +151,11 @@ def dictionary(word):
   m = soup.find_all('span', class_='dtText')[:3]
 
   if m == []:
-      m = soup.find('p',class_='spelling-suggestion-text')
-      return [mm.text for mm in m]
+    words = soup.find('p',class_='spelling-suggestion-text')
+    return [w.text for w in words]
   else:
-    return [c.text.split(':')[1].strip() for c in m]
+    dictt= [c.text.split(':')[1].strip() for c in m]
+    return (','.join(str(a)for a in dictt))
     
 # structure will be constituded in the following way
 
@@ -217,8 +219,6 @@ def sendd_message_dict(update: Update, context: CallbackContext):
 
 
 
-
-
 def translatetele(update: Update, context : CallbackContext):
     # keyboard = [
     #     [
@@ -228,8 +228,8 @@ def translatetele(update: Update, context : CallbackContext):
     # ]
     # reply_markup = InlineKeyboardMarkup(keyboard)
     # update.message.reply_text("give the dest lang and text", reply_markup=reply_markup)
-    replytext = '''send the text you want to translate and specify the destination language by writing tolang then destination language code like 'en' 'de' 'es' 'tr' 'ar' 'it' \n
-    Ex: Life is just a chance to grow a soul tolang en'''
+    replytext = '''send the text you want to translate and specify the destination language by writing * then destination language code like 'en' 'de' 'es' 'tr' 'ar' 'it' \n
+    Ex: Life is just a chance to grow a soul * de'''
     m_id = update.message.message_id
     update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
     # bot.register_next_step_handler(update.message, send_to_trans, message_id = m_id)
@@ -238,74 +238,109 @@ def translatetele(update: Update, context : CallbackContext):
 
 def send_to_trans(update: Update, context: CallbackContext):
     textt = update.message.text
-    distint = textt.split('tolang ')
+    distint = textt.split('* ')
 
     try:
-
-        destlang = distint[1]
+        destlang = distint[1].lower()
         maintext = distint[0]   
-    except :
-
+    except IndexError:
         spilit = textt.split()
-        dest = spilit[-1]
+        dest = spilit[-1].lower()
         textlack = " ".join(spilit[:-1])
-    
+
     if len(distint) == 2:
 
         replytextt = translatetext(maintext,destlang)
-        update.message.reply_text(replytextt)
+
     else:
         try:
             replytextt = "this is not proper usage but maybe this is the translation you desire\n" + translatetext(textlack,dest)
-        except:
+        except Exception as e:
             replytextt = '''You are doing wrong\n
             Please try again but anyway\n '''
-        update.message.reply_text(replytextt)
+
+    update.message.reply_text(replytextt)
     # await query.edit_message_text(replytextt)
     
 
 
 def voicetele(update: Update, context: CallbackContext):
-    replytext = '''send the text you want to translate and specify the destination language code like en de it tr es  b \n'''
+    replytext = '''So Here is the voice quiz give me the language code that you want to exercise then the level you want to train (1-3) \n
+I will send you the voice then you
+will  guess the right answer. Let's go! Ex: es 3'''
     m_id = update.message.message_id
+
     update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
     return voc
 
+answers = {'number':'', 'words':''}
+
 def answer_with_voice(update: Update, context: CallbackContext):
+    global answers
     m_id = update.message.message_id
-    if len (update.message.text) == 2:
-        dest = update.message.text
-        answ = create_audio_number(dest)
-    else:
-        answ = create_audio_number()
-    move_ans = {'audio': answ}
-    context.bot_data.update(move_ans)
-    context.bot.send_message(chat_id=update.message.chat.id, text=answ[1])
-    # context.bot.send_audio(chat_id=update.message.chat.id, audio=answ[0])
+    textt = update.message.text.split(' ')
+    if len(textt)==2:
+
+        if len (textt[0]) == 2:
+            hardness = number_level(textt[1])
+            dest = (update.message.text).lower()
+            # if type(hardness) == int:
+            #     answers['number'] = create_audio_number(hardness,dest)
+            # else:
+            answers['number'] = create_audio_number(dest)
+        else:
+            answers['number'] = create_audio_number()
+    # move_ans = {'audio': answ}
+    # context.bot_data.update(move_ans)
+    # context.bot.send_message(chat_id=update.message.chat.id, text=answers['number'][1])
+    context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0])
 
     return quizans
 
-# def quiztele(update: Update, context: CallbackContext):
-#     selections = ['ana', 'baba', 'kardas']
-#     question = 'what is your name?'
-#     msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=1)
-#     payload = {
-#     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
-# }
-#     context.bot_data.update(payload)
 
-def quizanssfunc(update: Update, context: CallbackContext):
-    # random.shuffle()
-    #  gonna find a way to take answer from answer_with_voice function
-    move_ans = context.bot_data.get(update.m_id)
-    answer = move_ans.get('audio')
-    selections = ['ana', 'baba', 'kardas', f'{answer[1]}']
-    question = 'what is your name?'
-    msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=4)
+def number_level(number):
+
+    if number == '1':
+        k = np.random.randint(1,100)
+    if number == '2':
+        k = np.random.randint(100,1000)
+    if number == '3':
+        k = np.random.randint(1000,10000)
+    if re.match('[1-3]',str(number)) is None:
+
+        k = 'You need to give 1,2,3 as level nothing else'
+    return k
+# solve the number level function problem and throw it to the right function and return the answer
+# we need to run create_audio_number function just one time 
+def quiztele(update: Update, context: CallbackContext):
+    global answers, dictt
+    numberr = update.message.text
+    number_answer = answers["number"][1]
+    level = update.message.text
+    selections = [dictt[1],dictt[2],dictt[3], f'{number_answer}']
+    number_level(numberr)
+    np.random.shuffle(selections)
+    correct_id = selections.index(f'{number_answer}')
+    selections 
+    question = 'what is the number?'
+    msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=correct_id)
     payload = {
     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
 }
     context.bot_data.update(payload)
+
+# def quizanssfunc(update: Update, context: CallbackContext):
+#     # random.shuffle()
+#     #  gonna find a way to take answer from answer_with_voice function
+#     move_ans = context.bot_data.get(update.m_id)
+#     answer = answers('audio')
+#     selections = ['ana', 'baba', 'kardas', f'{answer[1]}']
+#     question = 'what is your name?'
+#     msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=4)
+#     payload = {
+#     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
+# }
+#     context.bot_data.update(payload)
 
 async def receive_quiz_answer(update: Update, context: CallbackContext) -> None:
     """Close quiz after three participants took it"""
@@ -348,7 +383,7 @@ def main():
     dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(CommandHandler('cancel', cancel))
     # dispatcher.add_handler(
-    dispatcher.add_handler(CommandHandler('quiz',quizanssfunc))
+    # dispatcher.add_handler(CommandHandler('quiz',quiztele))
 
 
 
@@ -363,12 +398,13 @@ def main():
 
 
     conv_handler = ConversationHandler (
-        entry_points=[CommandHandler('translate', translatetele),CommandHandler('voice', voicetele)],
+        entry_points=[CommandHandler('translate', translatetele),CommandHandler('practicenumber', voicetele)],
         # CommandHandler('quizvoice',answer_with_voice)
         states={
             IN: [MessageHandler(Filters.text , send_to_trans)],
             voc: [MessageHandler(Filters.text,answer_with_voice )],
-            quizans : [CommandHandler('quizz',quizanssfunc)],
+            #make it message handler with level 
+            quizans : [MessageHandler(Filters.text,quiztele)],
         #    tolang: [MessageHandler(Filters.text,start_handler)]
         },
 
