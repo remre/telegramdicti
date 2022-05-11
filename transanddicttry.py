@@ -1,5 +1,5 @@
 # from imaplib import _AnyResponseData
-from email.mime import audio
+# from email.mime import audio
 import telebot 
 
 
@@ -201,7 +201,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 
-IN, out, tolang, voc, quizans= range(5)
+IN, out, tolang, voc, quizans, goback,Quizroutes= range(7)
 
 m_help = "You can use the following commands:\n"\
 "/practiceword : First select the destination language then select the right answer\n"\
@@ -331,7 +331,7 @@ will  guess the right answer. Let's go! Ex: es 3'''
 
 answers = {'number':'', 'words':''}
 
-def answer_with_voice(update: Update, context: CallbackContext):
+async def answer_with_voice(update: Update, context: CallbackContext):
     global answers
     m_id = update.message.message_id
     textt = update.message.text.split(' ')
@@ -349,9 +349,19 @@ def answer_with_voice(update: Update, context: CallbackContext):
     # move_ans = {'audio': answ}
     # context.bot_data.update(move_ans)
     # context.bot.send_message(chat_id=update.message.chat.id, text=answers['number'][1])
-    context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0])
 
-    return quizans
+    # context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0])
+    query = update.callback_query
+    await query.answer()
+    keyboard = [
+        [
+            InlineKeyboardButton("Yes, let's do it again!", callback_data=str(quizans)),
+            InlineKeyboardButton("Nah, I've had enough ...", callback_data=str(goback)),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await query.edit_message_text(text="Third CallbackQueryHandler. Do want to start over?", reply_markup=reply_markup)
+    return Quizroutes
 
 
 def number_level(number):
@@ -370,11 +380,12 @@ def number_level(number):
 # we need to run create_audio_number function just one time 
 def quiztele(update: Update, context: CallbackContext):
     global answers, dictt_answers
-    numberr = update.message.text
+
     number_answer = answers["number"][1]
+    # question  = answers["number"][0]
     level = update.message.text
     selections = [dictt_answers[1],dictt_answers[2],dictt_answers[3], f'{number_answer}']
-    number_level(numberr)
+    
     np.random.shuffle(selections)
     correct_id = selections.index(f'{number_answer}')
     selections 
@@ -458,11 +469,14 @@ def main():
         # CommandHandler('quizvoice',answer_with_voice)
         states={
             IN: [MessageHandler(Filters.text , send_to_trans)],
-            voc: [MessageHandler(Filters.text,answer_with_voice )],
+            voc: [MessageHandler(Filters.text, answer_with_voice)],
             #make it message handler with level 
-            quizans : [MessageHandler(Filters.text,quiztele)],
-        #    tolang: [MessageHandler(Filters.text,start_handler)]
+            Quizroutes: [
+            CallbackQueryHandler(quiztele,pattern="^"+str(quizans)+"$"),
+            CallbackQueryHandler(voicetele,pattern="^"+str(goback)+"$"), 
+            ],
         },
+        #    tolang: [MessageHandler(Filters.text,start_handler)]},
 
         fallbacks=[CommandHandler('cancel', cancel)] ,)
 
