@@ -25,95 +25,95 @@ import glob
 import logging
 
 
-
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-cafc88105725.json'
-
-def number_level(number):
-
-    if number == '1':
-        k = np.random.randint(1,100)
-    if number == '2':
-        k = np.random.randint(100,1000)
-    if number == '3':
-        k = np.random.randint(1000,10000)
-    if re.match('[1-3]',str(number)) is None:
-
-        k = 'You need to give 1,2,3 as level nothing else'
-    
-    return k
+from transanddicttry import *
 
 
-    
-def create_audio_number(number,dest='de',src='en'):
-    number  = number_level(str(number))
-    # number = np.random.randint(10,1000)
-    translator = Translator()
-    p = inflect.engine()
-    number_w = p.number_to_words(number)
-    result = translator.translate(number_w, src=src, dest=dest)
-    # Instantiates a client
-    client = texttospeech.TextToSpeechClient()
-    
-    # Set the text input to be synthesized
-    synthesis_input = texttospeech.SynthesisInput(text=result.text)
-    
-    # Build the voice request, select the language code ("en-US") and the ssml
-    # voice gender ("neutral")
-    voice = texttospeech.VoiceSelectionParams(
-        language_code= dest,
-        ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,)
+def main():
+    """Main."""
+    updater = Updater(token)
+    dispatcher = updater.dispatcher
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("help", help))
+    dispatcher.add_handler(CommandHandler('cancel', cancel))
+    dispatcher.add_handler(PollHandler(receive_quiz_answer,pass_chat_data=True, pass_user_data=True)) 
+    dispatcher.add_error_handler(error)
 
-    # Select the type of audio file you want returned
-    audio_config = texttospeech.AudioConfig(
-        audio_encoding=texttospeech.AudioEncoding.MP3)
+    translator_conv = ConversationHandler (
+        entry_points=[CommandHandler('translate', translatetele)],
 
-    # Perform the text-to-speech request on the text input with the selected
-    # voice parameters and audio file type
-    response = client.synthesize_speech(
-            request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
+        states={
+            IN: [MessageHandler(Filters.text , send_to_trans)]
+           
+        },
+        fallbacks=[CommandHandler('help', help)] ,
+        )
+        
+    number_quiz = ConversationHandler (
+        entry_points=[CommandHandler('practicenumber', voicetele)],
+
+        states={
+            voc: [MessageHandler(Filters.text, answer_with_voice)],
+            # quizans : [MessageHandler(Filters.text, quiztele)],
+            Quizroutes:
+            [CallbackQueryHandler(answer_with_voice, pattern="^" + str(voc) + "$"), 
+           
+            CallbackQueryHandler(quiztele, pattern="^" + str(quizans) + "$"),
+            CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$")],    
+        },
+
+        fallbacks=[CommandHandler('help', help)] ,
         )
 
-    # The response's audio_content is binary.
-    with open(f'audio/{result.text}.mp3', 'wb') as out:
-        # Write the response to the output file.
-        out.write(response.audio_content)
+    word_quiz = ConversationHandler (
+        entry_points=[CommandHandler('practiceword', voicetelee)],
+        # CommandHandler('quizvoice',answer_with_voice)
+        states={
+            voc:
+            [MessageHandler(Filters.text, answer_with_voice)],
+            # quizans : [MessageHandler(Filters.text, quiztele)],
+            Quizroutes: 
+            [CallbackQueryHandler(answer_with_voice, pattern="^" + str(voc) + "$"), 
+            # CallbackQueryHandler(voicetele, pattern="^" + str(quizagain) + "$"),
+            CallbackQueryHandler(quiztele, pattern="^" + str(quizans) + "$"),
+            MessageHandler(Filters.regex('quizagain'), help),],
+
+        },
+        fallbacks=[CommandHandler('help', help)] ,)
+
+    conv_handlerr = ConversationHandler(
+        entry_points=[CommandHandler("dictionary", dictitele)],
+        states={
+            out: [MessageHandler(Filters.text, sendd_message_dict)],
+            #, pattern='^([a-z])$'
+        },
         
-        
-        
-    return  result.text
-answers = {'number':'', 'words':''}
-def answer_with_voice(textt):
+        fallbacks=[CommandHandler('start', start)],
+    )
 
-    global answers
-    textt = textt.split(' ')
+    dispatcher.add_handler(translator_conv)
+    dispatcher.add_handler(number_quiz)
+    dispatcher.add_handler(word_quiz)
+    dispatcher.add_handler(conv_handlerr)
+
+    PORT = int(os.environ.get('PORT', '8443'))
+    updater.start_webhook(listen="0.0.0.0",
+                          port=PORT,
+                          url_path=token)
+    updater.bot.setWebhook('https://telegramtrans-app.herokuapp.com/' + token)
+
+    updater.start_polling()
+    updater.idle()
+    while True:
+        schedule.run_pending()
+        # The sleep prevents the CPU to work unnecessarily.
+        time.sleep(1)
+    # updater.idle()
+
+    # Declaration of the schedule
+    # schedule.every().day.at(deliver_time).do(job)
 
 
-    # return len (textt[0]) == 2
-    if len(textt)==2:
-
-        if len (textt[0]) == 2:
-            hardness = textt[1]
-            dest = (textt[0]).lower()
-            return create_audio_number(hardness,dest)
-    #         answers['number'] = create_audio_number(hardness,dest=dest)
-    #         # return hardness,dest
-    # else:
-    #         answers['number'] = create_audio_number()
-
-    # return hardness ,dest
-# print(answer_with_voice('en 1'))
-# print(answers)
-# print()
-# print(answers)
-# number = '3'
-# number  = number_level(number)
-# translator = Translator()
-# p = inflect.engine()
-# number_w = p.number_to_words(number)
-# # print(number_w)
-# result = translator.translate(number_w,dest = 'de')
-# print(result.text)
-# # number = np.random.randint(10,1000)
-print(create_audio_number(3,'de'))
-# # number  = number_level(number)
-# print(result.text)
+# DispatcherHandlerStop
+if __name__ == "__main__":
+    # bot.polling()
+    main()
