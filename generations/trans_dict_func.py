@@ -126,65 +126,8 @@ def wrong_answers_number():
     glob.glob("audio\*.mp3")
     return [file.split('\\')[1].split('.')[0] for file in glob.glob("audio\*.mp3")]
   
-
-# print(new_voice)
-
-
-# new_word = TransGoogle('es')
-# filee = new_word.create_audio_file()
-# print(new_word)
-
-# number = None
-# number = str(number)
-# print(number is None)
-
-# def wrong_answers_number():
-#     glob.glob("audio\*.mp3")
-#     return [file.split('\\')[1].split('.')[0] for file in glob.glob("audio\*.mp3")]
-
-# dictt_answers = wrong_answers_number()
-# np.random.shuffle(dictt_answers)
-
-# def create_audio_word(dest='de',src='en'):
-
-#   translator = Translator()
-#   r = RandomWords()
-#   word = r.get_random_word()
-#   result = translator.translate(word, src=src, dest=dest)
-#   # Instantiates a client
-#   client = texttospeech.TextToSpeechClient()
- 
-#   # Set the text input to be synthesized
-#   synthesis_input = texttospeech.SynthesisInput(text=result.text)
-  
-#   # Build the voice request, select the language code ("en-US") and the ssml
-#   # voice gender ("neutral")
-#   voice = texttospeech.VoiceSelectionParams(
-#     language_code= dest,
-#     ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,)
-
-#   # Select the type of audio file you want returned
-#   audio_config = texttospeech.AudioConfig(
-#     audio_encoding=texttospeech.AudioEncoding.MP3)
-
-#   # Perform the text-to-speech request on the text input with the selected
-#   # voice parameters and audio file type
-#   response = client.synthesize_speech(
-#         request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
-#     )
-
-#   # The response's audio_content is binary.
-#   with open('audio/question_word.mp3', 'wb') as out:
-#     # Write the response to the output file.
-#     out.write(response.audio_content)
-    
-    
-    
-#   return result.text
-
-
-# print(create_audio_word())
-
+def wrong_answers_word():
+    pass
 class Translatet:
     def __init__(self,text, *args):
         self.text = text
@@ -207,3 +150,13 @@ class Translatet:
 
 # trial = Translatet('wilkommen','tr')
 # print(trial.translatetext())
+# print(new_voice)
+
+
+# new_word = TransGoogle('es')
+# filee = new_word.create_audio_file()
+# print(new_word)
+
+# number = None
+# number = str(number)
+# print(number is None)
