@@ -311,6 +311,11 @@ def main():
     dispatcher.add_handler(word_quiz)
     dispatcher.add_handler(conv_handlerr)
 
+    updater.start_webhook(listen="0.0.0.0",
+                          port=int(8080),
+                          url_path=token)
+    updater.bot.setWebhook('https://yourherokuappname.herokuapp.com/' + token)
+
     updater.start_polling()
     updater.idle()
     while True:
