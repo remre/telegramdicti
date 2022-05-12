@@ -63,10 +63,10 @@ class TransGoogle:
         response = client.synthesize_speech(
             request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
         )
-        with open('C:/Users/emreb/Documents/projects/telegramdicti/audio/NumberQuestion.mp3', 'wb') as out:
+        with open('C:/Users/emreb/Documents/projects/telegramdicti/audio/QuizQuestion.mp3', 'wb') as out:
         # Write the response to the output file.
             out.write(response.audio_content)
-        return open('C:/Users/emreb/Documents/projects/telegramdicti/audio/NumberQuestion.mp3', 'rb'), text
+        return open('C:/Users/emreb/Documents/projects/telegramdicti/audio/QuizQuestion.mp3', 'rb'), text
 
     
 

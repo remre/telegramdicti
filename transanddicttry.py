@@ -40,6 +40,8 @@ from telegram.ext import (
     ConversationHandler,
 )
 from telegram import (
+    KeyboardButtonPollType,
+    KeyboardButton,
     ParseMode,
     Bot,
     Poll,
@@ -159,7 +161,7 @@ np.random.shuffle(dictt_answers)
 # numberpractice,number_button= create_audio_number(f"{k}",'en','de')
 with open('C:/Users/emreb/Documents/projects/secret/token.txt', 'r') as f:
     token = f.read()
-
+IN, out, tolang, voc, quizans,Quizroutes,quizagain= range(7)
 
 
 # def translatetext(text,*args):
@@ -197,7 +199,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 
-IN, out, tolang, voc, quizans, goback,Quizroutes, newdict= range(8)
+
 
 m_help = "You can use the following commands:\n"\
 "/practiceword : First select the destination language then select the right answer\n"\
@@ -366,8 +368,14 @@ def answer_with_voice(update: Update, context: CallbackContext):
     # move_ans = {'audio': answ}
     # context.bot_data.update(move_ans)
     # context.bot.send_message(chat_id=update.message.chat.id, text=answers['number'][1])
-
-    context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0])
+    keyboard = [
+        [
+            InlineKeyboardButton("don't like it new question", callback_data=str(voc)),
+            InlineKeyboardButton("go to question", callback_data=str(quizans)),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0], reply_markup=reply_markup)
     # query  = update.callback_query
     # await query.answer()
     # keyboard = [
@@ -378,7 +386,7 @@ def answer_with_voice(update: Update, context: CallbackContext):
     # ]
     # reply_markup = InlineKeyboardMarkup(keyboard)
     # await query.edit_message_text(text="Third CallbackQueryHandler. Do want to start over?", reply_markup=reply_markup)
-    return quizans
+    return Quizroutes
 
 
 
@@ -389,14 +397,21 @@ def quiztele(update: Update, context: CallbackContext):
 
     number_answer = answers["number"][1]
     # question  = answers["number"][0]
-    level = update.message.text
+    # level = update.message.text
     selections = [dictt_answers[1],dictt_answers[2],dictt_answers[3], f'{number_answer}']
     
     np.random.shuffle(selections)
     correct_id = selections.index(f'{number_answer}')
     selections 
-    question = 'what is the number?'
-    msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=correct_id)
+    question = 'what is the answer?'
+    keyboard = [
+        [
+            InlineKeyboardButton("Again!!", callback_data=str(quizagain)),
+            InlineKeyboardButton("Enough!", callback_data=str(exit)),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=correct_id,reply_markup=reply_markup)
     payload = {
     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
 }
@@ -414,6 +429,21 @@ def quiztele(update: Update, context: CallbackContext):
 #     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
 # }
 #     context.bot_data.update(payload)
+# async def one(update: Update, context: CallbackContext):
+#     """Show new choice of buttons"""
+#     query = update.callback_query
+#     await query.answer()
+#     keyboard = [
+#         [
+#             InlineKeyboardButton("3", callback_data=str(voc)),
+#             InlineKeyboardButton("4", callback_data=str(quizans)),
+#         ]
+#     ]
+#     reply_markup = InlineKeyboardMarkup(keyboard)
+#     await query.edit_message_text(
+#         text="select start quiz or try another question", reply_markup=reply_markup
+#     )
+    return Quizroutes
 
 async def receive_quiz_answer(update: Update, context: CallbackContext) -> None:
     """Close quiz after three participants took it"""
@@ -442,17 +472,20 @@ def cancel(update, context):
     update.message.reply_text('Thank you! I hope we can talk again some day.\n')
     return ConversationHandler.END
 
-async def end(update: Update, context: CallbackContext) -> int:
-    """Returns `ConversationHandler.END`, which tells the
-    ConversationHandler that the conversation is over.
-    """
-    query = update.callback_query
-    await query.answer()
-    await query.edit_message_text(text="See you next time!")
-    return ConversationHandler.END
+# async def end(update: Update, context: CallbackContext) -> int:
+#     """Returns `ConversationHandler.END`, which tells the
+#     ConversationHandler that the conversation is over.
+#     """
+#     query = update.callback_query
+#     await query.answer()
+#     await query.edit_message_text(text="See you next time!")
+#     return ConversationHandler.END
 
 
-
+def error(update, context):
+    """Log Errors caused by Updates."""
+    logging.warning('Update "%s" ', update)
+    logging.exception(context.error)
 
 def main():
     """Main."""
@@ -467,9 +500,9 @@ def main():
 
 
 
-    dispatcher.add_handler(PollHandler(receive_quiz_answer))
-
-
+    # dispatcher.add_handler(PollHandler(receive_quiz_answer,pass_chat_data=True, pass_user_data=True))
+        
+    dispatcher.add_error_handler(error)
     # dispatcher.add_handler(CommandHandler("practiceword", create_audio_word))
     # dispatcher.add_handler(CommandHandler("practicenumber", create_audio_number))
     # dispatcher.add_handler(CommandHandler('translate', translatetele) )
@@ -491,8 +524,11 @@ def main():
         # CommandHandler('quizvoice',answer_with_voice)
         states={
             voc: [MessageHandler(Filters.text, answer_with_voice)],
-            quizans : [MessageHandler(Filters.text, quiztele)],
-            
+            # quizans : [MessageHandler(Filters.text, quiztele)],
+            Quizroutes : [CallbackQueryHandler(answer_with_voice, pattern="^" + str(voc) + "$"), 
+            # CallbackQueryHandler(voicetele, pattern="^" + str(quizagain) + "$"),
+            CallbackQueryHandler(quiztele, pattern="^" + str(quizans) + "$"),
+            CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$")],
             
             #make it message handler with level 
            
@@ -505,8 +541,16 @@ def main():
         # CommandHandler('quizvoice',answer_with_voice)
         states={
             voc: [MessageHandler(Filters.text, answer_with_voice)],
-            quizans : [MessageHandler(Filters.text, quiztele)],
-            
+            # quizans : [MessageHandler(Filters.text, quiztele)],
+          Quizroutes : [CallbackQueryHandler(answer_with_voice, pattern="^" + str(voc) + "$"), 
+            # CallbackQueryHandler(voicetele, pattern="^" + str(quizagain) + "$"),
+            CallbackQueryHandler(quiztele, pattern="^" + str(quizans) + "$"),
+            MessageHandler(Filters.regex('quizagain'), help),],
+             
+            # tolang: [CallbackQueryHandler(one)]
+            # voc: [MessageHandler(Filters.text, answer_with_voice)],
+            # quizans : [MessageHandler(Filters.text, quiztele)],
+            # tolang: 
             
             #make it message handler with level 
            
@@ -518,7 +562,6 @@ def main():
 
     conv_handlerr = ConversationHandler(
         entry_points=[CommandHandler("dictionary", dictitele)],
-
         states={
             out: [MessageHandler(Filters.text, sendd_message_dict)],
             #, pattern='^([a-z])$'
