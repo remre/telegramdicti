@@ -26,7 +26,7 @@ import logging
 
 
 from transanddicttry import *
-
+PORT = int(os.environ.get('PORT', '8443'))
 
 def main():
     """Main."""
@@ -95,11 +95,12 @@ def main():
     dispatcher.add_handler(word_quiz)
     dispatcher.add_handler(conv_handlerr)
 
-    PORT = int(os.environ.get('PORT', '8443'))
-    updater.start_webhook(listen="0.0.0.0",
-                          port=PORT,
-                          url_path=token)
-    updater.bot.setWebhook('https://telegramtrans-app.herokuapp.com/' + token)
+    
+    # updater.start_webhook(listen="127.0.0.1",
+    #                       port=PORT,
+    #                       url_path=token)
+    # updater.bot.setWebhook('https://telegramtrans-app.herokuapp.com/' + token)
+    
 
     updater.start_polling()
     updater.idle()
@@ -116,4 +117,5 @@ def main():
 # DispatcherHandlerStop
 if __name__ == "__main__":
     # bot.polling()
+    print(token), print(PORT)
     main()
