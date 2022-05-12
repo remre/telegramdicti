@@ -102,12 +102,12 @@ def main():
     updater.bot.setWebhook('https://telegramtrans-app.herokuapp.com/' + token)
     
 
-    updater.start_polling()
-    updater.idle()
-    while True:
-        schedule.run_pending()
-        # The sleep prevents the CPU to work unnecessarily.
-        time.sleep(1)
+    # updater.start_polling()
+    # updater.idle()
+    # while True:
+    #     schedule.run_pending()
+    #     # The sleep prevents the CPU to work unnecessarily.
+    #     time.sleep(1)
     # updater.idle()
 
     # Declaration of the schedule
@@ -117,5 +117,5 @@ def main():
 # DispatcherHandlerStop
 if __name__ == "__main__":
     # bot.polling()
-    print(token), print(PORT)
+    # print(token), print(PORT)
     main()
