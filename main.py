@@ -96,10 +96,10 @@ def main():
     dispatcher.add_handler(conv_handlerr)
 
     
-    # updater.start_webhook(listen="127.0.0.1",
-    #                       port=PORT,
-    #                       url_path=token)
-    # updater.bot.setWebhook('https://telegramtrans-app.herokuapp.com/' + token)
+    updater.start_webhook(listen="127.0.0.1",
+                          port=PORT,
+                          url_path=token)
+    updater.bot.setWebhook('https://telegramtrans-app.herokuapp.com/' + token)
     
 
     updater.start_polling()
