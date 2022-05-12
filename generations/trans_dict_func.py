@@ -6,6 +6,8 @@ import re
 from random_word import RandomWords
 import os
 import inflect
+import requests
+from bs4 import BeautifulSoup as bs
 # from .transanddicttry import number_level
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-cafc88105725.json'
 
@@ -71,10 +73,7 @@ class TransGoogle:
 
     def dest_and_level_seperator(self):
         pass
-    
 
-    def create_audio(self):
-        pass
 
     def __str__(self):
         return f'{self.number}'
@@ -109,7 +108,24 @@ def number_level(number):
             if re.match('[1-3]',(number)) is None:
                 k = 'You need to give 1,2,3 as level nothing else'
             return k
+def dictionary(word):
 
+    url_merriam = 'https://www.merriam-webster.com/dictionary/'
+    page = requests.get(url_merriam+ word)
+    soup = bs(page.content, 'html.parser')
+    m = soup.find_all('span', class_='dtText')[:3]
+
+    if m == []:
+        words = soup.find('p',class_='spelling-suggestion-text')
+        dictt =  [w.text for w in words]
+    else:
+        dictt= [c.text.split(':')[1].strip() for c in m]
+
+    return (','.join(str(a)for a in dictt))
+def wrong_answers_number():
+    glob.glob("audio\*.mp3")
+    return [file.split('\\')[1].split('.')[0] for file in glob.glob("audio\*.mp3")]
+  
 
 # print(new_voice)
 

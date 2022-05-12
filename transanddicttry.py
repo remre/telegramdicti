@@ -1,26 +1,26 @@
 # from imaplib import _AnyResponseData
 # from email.mime import audio
 import telebot 
-from generations.trans_dict_func import TransGoogle,Translatet
+from generations.trans_dict_func import TransGoogle,Translatet, dictionary,wrong_answers_number
 
-import requests
-from bs4 import BeautifulSoup as bs
-from google.cloud import texttospeech
-import re
-from random_word import RandomWords
+# import requests
+# from bs4 import BeautifulSoup as bs
+# from google.cloud import texttospeech
+# import re
+# from random_word import RandomWords
 
-import inflect
-import pandas
+# import inflect
+# import pandas
 
-from googletrans import Translator
-import requests
-from bs4 import BeautifulSoup as bs
-from google.cloud import texttospeech
-import re
-from random_word import RandomWords
+# from googletrans import Translator
+# import requests
+# from bs4 import BeautifulSoup as bs
+# from google.cloud import texttospeech
+# import re
+# from random_word import RandomWords
 
-import inflect
-import pandas
+# import inflect
+
 import numpy as np
 import glob
 import logging
@@ -52,13 +52,11 @@ from telegram import (
     BotCommandScopeChatAdministrators,
     ReplyKeyboardMarkup
 )
-from typing import Tuple, Dict, Any
+# from typing import Tuple, Dict, Any
 from telebot import types
 
-import numpy
 import schedule
 import time
-import os
 
 import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-cafc88105725.json'
@@ -74,9 +72,6 @@ def wrong_answers_word():
     pass
 
 #  add here take words whose first letter same with result
-def wrong_answers_number():
-    glob.glob("audio\*.mp3")
-    return [file.split('\\')[1].split('.')[0] for file in glob.glob("audio\*.mp3")]
 
 dictt_answers = wrong_answers_number()
 np.random.shuffle(dictt_answers)
@@ -167,32 +162,32 @@ with open('C:/Users/emreb/Documents/projects/secret/token.txt', 'r') as f:
 
 
 
-def translatetext(text,*args):
-    translator = Translator()
-    if args != ():
-        if len(args) == 1:
-            result = translator.translate(text, dest=args[0])
-        if len(args) == 2:
-            result = translator.translate(text, src=args[1], dest=args[0])
-    else:
-        result = translator.translate(text)
+# def translatetext(text,*args):
+#     translator = Translator()
+#     if args != ():
+#         if len(args) == 1:
+#             result = translator.translate(text, dest=args[0])
+#         if len(args) == 2:
+#             result = translator.translate(text, src=args[1], dest=args[0])
+#     else:
+#         result = translator.translate(text)
 
-    return result.text
+#     return result.text
 
-def dictionary(word):
+# def dictionary(word):
 
-    url_merriam = 'https://www.merriam-webster.com/dictionary/'
-    page = requests.get(url_merriam+ word)
-    soup = bs(page.content, 'html.parser')
-    m = soup.find_all('span', class_='dtText')[:3]
+#     url_merriam = 'https://www.merriam-webster.com/dictionary/'
+#     page = requests.get(url_merriam+ word)
+#     soup = bs(page.content, 'html.parser')
+#     m = soup.find_all('span', class_='dtText')[:3]
 
-    if m == []:
-        words = soup.find('p',class_='spelling-suggestion-text')
-        dictt =  [w.text for w in words]
-    else:
-        dictt= [c.text.split(':')[1].strip() for c in m]
+#     if m == []:
+#         words = soup.find('p',class_='spelling-suggestion-text')
+#         dictt =  [w.text for w in words]
+#     else:
+#         dictt= [c.text.split(':')[1].strip() for c in m]
 
-    return (','.join(str(a)for a in dictt))
+#     return (','.join(str(a)for a in dictt))
     
 # structure will be constituded in the following way
 
@@ -239,8 +234,6 @@ def dictitele(update: Update, context: CallbackContext):
     
     message_id = update.message.message_id
     # chat_id = update.message.chat.id
-
-    
     # replytext = update.message.text
     replytext = 'Give me the word You want to see definition'
     update.message.reply_text(replytext, reply_to_message_id = message_id)
@@ -252,9 +245,6 @@ def dictitele(update: Update, context: CallbackContext):
 def sendd_message_dict(update: Update, context: CallbackContext):
     replytext = dictionary(update.message.text)
     update.message.reply_text(replytext)
-
-    
-
 
 def translatetele(update: Update, context : CallbackContext):
     # keyboard = [
@@ -340,7 +330,7 @@ will  guess the right answer. Let's go! Ex: es'''
     update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
     return voc
 
-answers = {'number':'', 'words':''}
+answers = {'number':'', }#'words':''
 # def number_level(number):
 
 #     if number == '1':
@@ -368,12 +358,11 @@ def answer_with_voice(update: Update, context: CallbackContext):
         else:
             context.bot.send_message(chat_id=update.message.chat.id, text="You need to give the language code and the level check the example\n and try again!")
             return voc
-    if len(textt)==1:
-        if len (textt[0]) == 2:
-            dest = textt[0].lower().strip()
-            new_word = TransGoogle(dest)
-            new_word_voice = new_word.create_audio_file()
-            answers['number'] = new_word_voice
+    if len(textt) == 1 and len(textt[0]) == 2:
+        dest = textt[0].lower().strip()
+        new_word = TransGoogle(dest)
+        new_word_voice = new_word.create_audio_file()
+        answers['number'] = new_word_voice
     # move_ans = {'audio': answ}
     # context.bot_data.update(move_ans)
     # context.bot.send_message(chat_id=update.message.chat.id, text=answers['number'][1])
