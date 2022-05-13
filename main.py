@@ -94,19 +94,19 @@ def main():
     dispatcher.add_handler(conv_handlerr)
 
     
-    # updater.start_webhook(listen="127.0.0.1",
-    #                       port=PORT,
-    #                       url_path=token)
-    # updater.bot.setWebhook('https://https://telegramtrans-app.herokuapp.com//' + token)
+    updater.start_webhook(listen="127.0.0.1",
+                          port=PORT,
+                          url_path=token)
+    updater.bot.setWebhook('https://https://telegramtrans-app.herokuapp.com//' + token)
     
 
-    updater.start_polling()
+    # updater.start_polling()
     updater.idle()
     while True:
         schedule.run_pending()
         # The sleep prevents the CPU to work unnecessarily.
         time.sleep(1)
-    updater.idle()
+    # updater.idle()
 
     # Declaration of the schedule
     # schedule.every().day.at(deliver_time).do(job)
