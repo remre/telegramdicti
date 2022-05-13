@@ -1,6 +1,4 @@
 import os
-
-
 from google.cloud import texttospeech
 import requests
 from bs4 import BeautifulSoup as bs
@@ -87,7 +85,7 @@ def main():
             #, pattern='^([a-z])$'
         },
         
-        fallbacks=[CommandHandler('start', start)],
+        fallbacks=[MessageHandler(Filters.command, cancel)],
     )
 
     dispatcher.add_handler(translator_conv)
@@ -96,18 +94,18 @@ def main():
     dispatcher.add_handler(conv_handlerr)
 
     
-    updater.start_webhook(listen="127.0.0.1",
-                          port=PORT,
-                          url_path=token)
-    updater.bot.setWebhook('https://https://telegramtrans-app.herokuapp.com//' + token)
+    # updater.start_webhook(listen="127.0.0.1",
+    #                       port=PORT,
+    #                       url_path=token)
+    # updater.bot.setWebhook('https://https://telegramtrans-app.herokuapp.com//' + token)
     
 
-    # updater.start_polling()
-    # updater.idle()
-    # while True:
-    #     schedule.run_pending()
-    #     # The sleep prevents the CPU to work unnecessarily.
-    #     time.sleep(1)
+    updater.start_polling()
+    updater.idle()
+    while True:
+        schedule.run_pending()
+        # The sleep prevents the CPU to work unnecessarily.
+        time.sleep(1)
     updater.idle()
 
     # Declaration of the schedule

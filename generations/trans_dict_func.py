@@ -9,7 +9,7 @@ import inflect
 import requests
 from bs4 import BeautifulSoup as bs
 # from .transanddicttry import number_level
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-cafc88105725.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-e457ccfc6ca7.json'
 
 class TransGoogle:
 
@@ -147,16 +147,21 @@ class Translatet:
     def __str__(self):
         return f'{self.text}'
 
-
+# new_word = TransGoogle('es')
 # trial = Translatet('wilkommen','tr')
 # print(trial.translatetext())
 # print(new_voice)
 
+# r_word = RandomWords()
+# print(r_word.get_random_word())
 
-# new_word = TransGoogle('es')
 # filee = new_word.create_audio_file()
 # print(new_word)
 
 # number = None
 # number = str(number)
 # print(number is None)
+# translator = Translator()
+# text = 'hello'
+# result = translator.translate(text, dest='es',src='de',)
+# print(type(translator))

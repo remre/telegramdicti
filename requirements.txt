@@ -48,20 +48,20 @@ pandas==1.4.2
 # prompt-toolkit @ file:///home/conda/feedstock_root/build_artifacts/prompt-toolkit_1649130487073/work
 proto-plus==1.20.3
 protobuf==3.20.1
-#pure-eval @ file:///home/conda/feedstock_root/build_artifacts/pure_eval_1642875951954/work
+# pure-eval @ file:///home/conda/feedstock_root/build_artifacts/pure_eval_1642875951954/work
 pyasn1-modules==0.2.8
-#Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1641580240686/work
-#pyparsing @ file:///home/conda/feedstock_root/build_artifacts/pyparsing_1649603503565/work
+# Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1641580240686/work
+# pyparsing @ file:///home/conda/feedstock_root/build_artifacts/pyparsing_1649603503565/work
 pyTelegramBotAPI==4.5.0
-#python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/python-dateutil_1626286286081/work
+# python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/python-dateutil_1626286286081/work
 python-telegram-bot==13.11
 pytz-deprecation-shim==0.1.0.post0
-#pyzmq @ file:///C:/ci/pyzmq_1628276569449/work
+# pyzmq @ file:///C:/ci/pyzmq_1628276569449/work
 Random-Word==1.0.7
 requests==2.27.1
 rfc3986==1.5.0
 schedule==1.1.0
-#six @ file:///home/conda/feedstock_root/build_artifacts/six_1620240208055/work
+# six @ file:///home/conda/feedstock_root/build_artifacts/six_1620240208055/work
 soupsieve==2.3.2.post1
 # stack-data @ file:///home/conda/feedstock_root/build_artifacts/stack_data_1644872665635/work
 # tornado @ file:///C:/ci/tornado_1606942379977/work
