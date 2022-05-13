@@ -1,73 +1,123 @@
+anyio==3.4.0
+apns2==0.7.2
 APScheduler==3.6.3
-# asttokens @ file:///home/conda/feedstock_root/build_artifacts/asttokens_1618968359944/work
-# backcall @ file:///home/conda/feedstock_root/build_artifacts/backcall_1592338393461/work
-# backports.functools-lru-cache @ file:///home/conda/feedstock_root/build_artifacts/backports.functools_lru_cache_1618230623929/work
+asgiref==3.4.1
+backports.entry-points-selectable==1.1.1
 backports.zoneinfo==0.2.1
+bcrypt==3.2.0
 beautifulsoup4==4.11.1
 cachetools==4.2.2
-certifi==2021.5.30
+certifi==2021.10.8
+cffi==1.15.0
 chardet==3.0.4
-# colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1602866480661/work
-# decorator @ file:///home/conda/feedstock_root/build_artifacts/decorator_1641555617451/work
-# entrypoints @ file:///home/conda/feedstock_root/build_artifacts/entrypoints_1643888246732/work
-# executing @ file:///home/conda/feedstock_root/build_artifacts/executing_1646044401614/work
-google-api-core==2.7.2
+charset-normalizer==2.0.9
+click==8.0.3
+colorama==0.4.4
+colorthief==0.2.1
+cryptography==36.0.0
+cssselect2==0.4.1
+defusedxml==0.7.1
+diff-match-patch==20200713
+distlib==0.3.4
+django-admin-sortable2==1.0.2
+django-anymail==8.4
+django-appconf==1.0.5
+django-ckeditor==6.2.0
+django-colorfield==0.5.0
+django-crontab==0.7.1
+django-image-cropping==1.6.1
+django-import-export==2.7.0
+django-js-asset==1.2.2
+django-languages-plus==1.1.1
+django-modeltranslation==0.17.3
+django-push-notifications==2.0.0
+django-timezone-field==4.2.1
+dnspython==2.1.0
+easy-thumbnails==2.8
+ecdsa==0.17.0
+email-validator==1.1.3
+et-xmlfile==1.1.0
+fastapi==0.70.0
+filelock==3.4.0
+google-api-core==2.7.3
 google-api-python-client==2.47.0
 google-auth==2.6.6
 google-auth-httplib2==0.1.0
-google-cloud==0.34.0
+google-cloud-core==2.3.0
 google-cloud-texttospeech==2.11.0
-googleapis-common-protos==1.56.0
-googletrans==4.0.0rc1
-grpcio==1.44.0
-grpcio-status==1.44.0
+google-cloud-translate==3.7.2
+googleapis-common-protos==1.56.1
+googletrans==3.1.0a0
+grpcio==1.46.1
+grpcio-status==1.46.1
 h11==0.9.0
 h2==3.2.0
-heroku==0.1.4
+hpack==3.0.0
 hstspreload==2021.12.1
+http-ece==1.1.0
 httpcore==0.9.1
 httplib2==0.20.4
 httpx==0.13.3
+hyper==0.7.0
 hyperframe==5.2.0
 idna==2.10
-inflect==5.5.2
-# ipykernel @ file:///C:/ci/ipykernel_1596206775157/work/dist/ipykernel-5.3.4-py3-none-any.whl
-# ipython @ file:///C:/ci/ipython_1593446240034/work
-# ipython-genutils @ file:///tmp/build/80754af9/ipython_genutils_1606773439826/work
-jedi==0.17.0
-jupyter-client==5.3.3
-jupyter-core==4.5.0
-# matplotlib-inline @ file:///home/conda/feedstock_root/build_artifacts/matplotlib-inline_1631080358261/work
-# nest-asyncio @ file:///home/conda/feedstock_root/build_artifacts/nest-asyncio_1648959695634/work
+inflect==5.6.0
+lxml==4.6.4
+MarkupPy==1.14
+mysqlclient==2.1.0
 nose==1.3.7
 numpy==1.22.3
-# packaging @ file:///home/conda/feedstock_root/build_artifacts/packaging_1637239678211/work
+odfpy==1.4.1
+openpyxl==3.0.9
 pandas==1.4.2
-# parso @ file:///home/conda/feedstock_root/build_artifacts/parso_1638334955874/work
-# pickleshare @ file:///home/conda/feedstock_root/build_artifacts/pickleshare_1602536217715/work
-# prompt-toolkit @ file:///home/conda/feedstock_root/build_artifacts/prompt-toolkit_1649130487073/work
+Pillow==8.4.0
+pip==21.2.2
 proto-plus==1.20.3
 protobuf==3.20.1
-# pure-eval @ file:///home/conda/feedstock_root/build_artifacts/pure_eval_1642875951954/work
+psycopg2==2.9.2
+py-vapid==1.8.2
+pyasn1==0.4.8
 pyasn1-modules==0.2.8
-# Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1641580240686/work
-# pyparsing @ file:///home/conda/feedstock_root/build_artifacts/pyparsing_1649603503565/work
-pyTelegramBotAPI==4.5.0
-# python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/python-dateutil_1626286286081/work
+pycparser==2.21
+pydantic==1.8.2
+PyJWT==1.7.1
+pyparsing==3.0.9
+python-dateutil==2.8.2
+python-jose==3.3.0
+python-multipart==0.0.5
 python-telegram-bot==13.11
+pytz==2021.3
 pytz-deprecation-shim==0.1.0.post0
-# pyzmq @ file:///C:/ci/pyzmq_1628276569449/work
+pywebpush==1.14.0
+PyYAML==6.0
 Random-Word==1.0.7
+reportlab==3.6.3
 requests==2.27.1
 rfc3986==1.5.0
+rsa==4.8
 schedule==1.1.0
-# six @ file:///home/conda/feedstock_root/build_artifacts/six_1620240208055/work
+sentry-sdk==1.5.0
+setuptools==61.2.0
+six==1.16.0
+sniffio==1.2.0
 soupsieve==2.3.2.post1
-# stack-data @ file:///home/conda/feedstock_root/build_artifacts/stack_data_1644872665635/work
-# tornado @ file:///C:/ci/tornado_1606942379977/work
-# traitlets @ file:///C:/ci/traitlets_1632759765830/work
+sqlparse==0.4.2
+starlette==0.16.0
+svglib==1.1.0
+tablib==3.1.0
+telebot==0.0.4
+telegram==0.0.1
+tinycss2==1.1.1
+tornado==6.1
+typing_extensions==4.0.1
 tzdata==2022.1
 tzlocal==4.2
 uritemplate==4.1.1
-# wcwidth @ file:///home/conda/feedstock_root/build_artifacts/wcwidth_1600965781394/work
+urllib3==1.26.7
+uvicorn==0.16.0
+virtualenv==20.10.0
+webencodings==0.5.1
+wheel==0.37.1
 wincertstore==0.2
+xlrd==2.0.1
+xlwt==1.3.0
