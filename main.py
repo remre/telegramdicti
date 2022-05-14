@@ -24,11 +24,12 @@ import logging
 
 
 from transanddicttry import *
+
 PORT = int(os.environ.get('PORT', '8443'))
 
 def main():
     """Main."""
-    updater = Updater(token)
+    updater = Updater(TOKEN)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help))
@@ -94,10 +95,10 @@ def main():
     dispatcher.add_handler(conv_handlerr)
 
     
-    updater.start_webhook(listen="127.0.0.1",
+    updater.start_webhook(listen="0.0.0.0",
                           port=PORT,
-                          url_path=token)
-    updater.bot.setWebhook('https://https://telegramtrans-app.herokuapp.com//' + token)
+                          url_path=TOKEN)
+    updater.bot.setWebhook('https://telegramtrans-app.herokuapp.com/' + TOKEN)
     
 
     # updater.start_polling()
