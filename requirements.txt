@@ -37,7 +37,7 @@ googletrans==3.1.0a0
 grpcio==1.46.1
 grpcio-status==1.46.1
 h11==0.9.0
-h2==2.*
+h2==2*
 hpack>=2.2.*
 hstspreload==2021.12.1
 http-ece==1.1.0
