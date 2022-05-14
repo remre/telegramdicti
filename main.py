@@ -26,7 +26,7 @@ import logging
 from transanddicttry import *
 
 PORT = int(os.environ.get('PORT', '8443'))
-
+TOKEN = '5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U'
 def main():
     """Main."""
     updater = Updater(TOKEN)
