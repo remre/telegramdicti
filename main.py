@@ -124,15 +124,14 @@ def main():
     dispatcher.add_handler(word_quiz)
     dispatcher.add_handler(conv_handlerr)
 
-    # PORT = int(os.environ.get('PORT', '8443'))
-    # updater.start_webhook(listen="0.0.0.0",
-    #                       port=PORT,
-    #                       url_path=TOKEN,
-    #                       webhook_url='https://transanddict.herokuapp.com/'+TOKEN)
-    # updater.bot.setWebhook('https://telegramtrans-app.herokuapp.com/' + TOKEN)
-    
+    PORT = int(os.environ.get('PORT', '8443'))
+    updater.start_webhook(listen="0.0.0.0",
+                          port=PORT,
+                          url_path=TOKEN,
+                          webhook_url='https://transanddict.herokuapp.com/')
+                        #   webhook_url='https://transanddict.herokuapp.com/'+TOKEN)
 
-    updater.start_polling()
+    # updater.start_polling()
 
     updater.idle()
     # while True:

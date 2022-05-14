@@ -5,6 +5,7 @@ import glob
 import telebot 
 import logging
 from telegram.ext import (
+    DispatcherHandlerStop,
     CommandHandler,
     Updater,
     MessageQueue,
@@ -239,7 +240,8 @@ def cancel(update, context):
     ''' to cancel the conversation'''
     update.message.reply_text('Thank you! I hope we can talk again some day.\n')
     return ConversationHandler.END
-
+    # DispatcherHandlerStop(state=help)
+    
 def error(update, context):
     """Log Errors caused by Updates."""
     logging.warning('Update "%s" ', update)
