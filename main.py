@@ -128,7 +128,7 @@ def main():
     updater.start_webhook(listen="0.0.0.0",
                           port=PORT,
                           url_path=TOKEN,
-                          webhook_url='https://transanddict.herokuapp.com/')
+                          webhook_url='https://telegramtrans-app.herokuapp.com/')
                         #   webhook_url='https://transanddict.herokuapp.com/'+TOKEN)
 
     # updater.start_polling()
