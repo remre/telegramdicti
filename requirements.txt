@@ -43,7 +43,7 @@ hstspreload==2021.12.1
 http-ece==1.1.0
 httpcore==0.9.1
 httplib2==0.20.4
-httpx==0.10.3
+httpx==0.12.1
 hyper==0.6.2
 hyperframe==3.2.0
 idna==2.10
