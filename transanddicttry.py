@@ -48,7 +48,7 @@ np.random.shuffle(dictt_answers)
 
 # with open('C:/Users/emreb/Documents/projects/secret/token.txt', 'r') as f:
 #     TOKEN = f.read()
-
+TOKEN = '5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U'
 IN, out, tolang, voc, quizans,Quizroutes,quizagain= range(7)
 
 logging.basicConfig(
