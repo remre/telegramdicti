@@ -25,7 +25,7 @@ import logging
 
 from transanddicttry import *
 
-PORT = int(os.environ.get('PORT', '8443'))
+
 TOKEN = '5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U'
 def main():
     """Main."""
@@ -35,7 +35,7 @@ def main():
     dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(CommandHandler('cancel', cancel))
     dispatcher.add_handler(PollHandler(receive_quiz_answer,pass_chat_data=True, pass_user_data=True)) 
-    dispatcher.add_error_handler(error)
+    
 
     translator_conv = ConversationHandler (
         entry_points=[CommandHandler('translate', translatetele)],
@@ -88,20 +88,22 @@ def main():
         
         fallbacks=[MessageHandler(Filters.command, cancel)],
     )
-
+    dispatcher.add_error_handler(error)
     dispatcher.add_handler(translator_conv)
     dispatcher.add_handler(number_quiz)
     dispatcher.add_handler(word_quiz)
     dispatcher.add_handler(conv_handlerr)
 
-    
+    PORT = int(os.environ.get('PORT', '8443'))
     updater.start_webhook(listen="0.0.0.0",
                           port=PORT,
-                          url_path=TOKEN)
-    updater.bot.setWebhook('https://telegramtrans-app.herokuapp.com/' + TOKEN)
+                          url_path=TOKEN,
+                          webhook_url='https://transanddict.herokuapp.com/')
+    # updater.bot.setWebhook('https://telegramtrans-app.herokuapp.com/' + TOKEN)
     
 
     # updater.start_polling()
+
     updater.idle()
     while True:
         schedule.run_pending()
