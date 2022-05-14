@@ -22,11 +22,41 @@ import numpy as np
 import glob
 import logging
 
-
+from telegram.ext import (
+    CommandHandler,
+    Updater,
+    MessageQueue,
+    MessageHandler,
+    Filters,
+    ExtBot,
+    Defaults,
+    ChatMemberHandler,
+    InlineQueryHandler,
+    CallbackContext,
+    CallbackQueryHandler,
+    PollHandler,
+    ConversationHandler,
+)
+from telegram import (
+    KeyboardButtonPollType,
+    KeyboardButton,
+    ParseMode,
+    Bot,
+    Poll,
+    Update,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+    BotCommandScopeAllPrivateChats, 
+    BotCommandScopeChat,
+    BotCommandScopeAllGroupChats,
+    BotCommandScopeChatAdministrators,
+    ReplyKeyboardMarkup
+)
 from transanddicttry import *
 
 
 TOKEN = '5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U'
+
 def main():
     """Main."""
     updater = Updater(TOKEN)
@@ -94,21 +124,21 @@ def main():
     dispatcher.add_handler(word_quiz)
     dispatcher.add_handler(conv_handlerr)
 
-    PORT = int(os.environ.get('PORT', '8443'))
-    updater.start_webhook(listen="0.0.0.0",
-                          port=PORT,
-                          url_path=TOKEN,
-                          webhook_url='https://transanddict.herokuapp.com/')
+    # PORT = int(os.environ.get('PORT', '8443'))
+    # updater.start_webhook(listen="0.0.0.0",
+    #                       port=PORT,
+    #                       url_path=TOKEN,
+    #                       webhook_url='https://transanddict.herokuapp.com/'+TOKEN)
     # updater.bot.setWebhook('https://telegramtrans-app.herokuapp.com/' + TOKEN)
     
 
-    # updater.start_polling()
+    updater.start_polling()
 
     updater.idle()
-    while True:
-        schedule.run_pending()
+    # while True:
+    #     schedule.run_pending()
         # The sleep prevents the CPU to work unnecessarily.
-        time.sleep(1)
+        # time.sleep(1)
     # updater.idle()
 
     # Declaration of the schedule
