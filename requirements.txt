@@ -1,5 +1,4 @@
-anyio==3.4.0
-apns2==0.7.2
+
 APScheduler==3.6.3
 asgiref==3.4.1
 backports.entry-points-selectable==1.1.1
@@ -38,7 +37,7 @@ googletrans==3.1.0a0
 grpcio==1.46.1
 grpcio-status==1.46.1
 h11==0.9.0
-h2==2.6.0
+h2==3.*
 hpack==2.3.0
 hstspreload==2021.12.1
 http-ece==1.1.0
@@ -82,7 +81,6 @@ reportlab==3.6.3
 requests==2.27.1
 rfc3986==1.5.0
 rsa==4.8
-schedule==1.1.0
 sentry-sdk==1.5.0
 setuptools==61.2.0
 six==1.16.0
