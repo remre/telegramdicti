@@ -125,13 +125,16 @@ def main():
     dispatcher.add_handler(conv_handlerr)
 
     PORT = int(os.environ.get('PORT', '8443'))
-    # updater.start_webhook(listen="0.0.0.0",
-    #                       port=PORT,
-    #                       url_path=TOKEN,
-    #                       webhook_url='https://telegramtrans-app.herokuapp.com/')
+    updater.start_webhook(listen="0.0.0.0",
+                          port=PORT,
+                          url_path=TOKEN,
+                          webhook_url='https://https://telegramtrans-app.herokuapp.com/'+TOKEN)
+                          
+    logging.info(f"Start webhook mode on port PORT:{PORT}")
                         #   webhook_url='https://transanddict.herokuapp.com/'+TOKEN)
+                        # to post https://api.telegram.org/bot5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U/setWebhook
 
-    updater.start_polling()
+    # updater.start_polling()
 
     updater.idle()
     # while True:
