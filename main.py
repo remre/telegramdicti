@@ -1,37 +1,12 @@
 import os
-from google.cloud import texttospeech
-import requests
-from bs4 import BeautifulSoup as bs
-from google.cloud import texttospeech
-import re
-from random_word import RandomWords
 
-import inflect
-import pandas
-
-from googletrans import Translator
-import requests
-from bs4 import BeautifulSoup as bs
-from google.cloud import texttospeech
-import re
-from random_word import RandomWords
-
-import inflect
-import pandas
-import numpy as np
-import glob
 import logging
 
 from telegram.ext import (
     CommandHandler,
     Updater,
-    MessageQueue,
     MessageHandler,
     Filters,
-    ExtBot,
-    Defaults,
-    ChatMemberHandler,
-    InlineQueryHandler,
     CallbackContext,
     CallbackQueryHandler,
     PollHandler,
@@ -40,19 +15,14 @@ from telegram.ext import (
 from telegram import (
     KeyboardButtonPollType,
     KeyboardButton,
-    ParseMode,
     Bot,
     Poll,
     Update,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
-    BotCommandScopeAllPrivateChats, 
-    BotCommandScopeChat,
-    BotCommandScopeAllGroupChats,
-    BotCommandScopeChatAdministrators,
     ReplyKeyboardMarkup
 )
-from transanddicttry import *
+from mhandlers import *
 
 
 TOKEN = '5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U'
@@ -63,7 +33,8 @@ def main():
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help))
-    dispatcher.add_handler(CommandHandler('cancel', cancel))
+    # dispatcher.add_handler(CommandHandler("cancel", cancel))
+    
     dispatcher.add_handler(PollHandler(receive_quiz_answer,pass_chat_data=True, pass_user_data=True)) 
     
 
@@ -71,11 +42,34 @@ def main():
         entry_points=[CommandHandler('translate', translatetele)],
 
         states={
-            IN: [MessageHandler(Filters.text , send_to_trans)]
-           
+            IN: [
+                MessageHandler(Filters.text & ~Filters.command , send_to_trans),#& ~Filters.command  
+                # CommandHandler("cancel", cancel)
+                ],
+            end_trans : [
+                MessageHandler(Filters.text & ~Filters.command , send_to_trans),
+                CommandHandler('cancel',cancel),
+            ],
         },
-        fallbacks=[CommandHandler('help', help)] ,
+       fallbacks=[CommandHandler('help', help)],
         )
+
+    dictionary_conv = ConversationHandler(
+        entry_points=[CommandHandler("dictionary", dictitele)],
+        states={
+            out: [
+            MessageHandler(Filters.text & ~Filters.command, sendd_message_dict),# & ~Filters.command
+            # CommandHandler("cancel", cancel),
+            ],
+            end_dict: [
+            MessageHandler(Filters.text & ~Filters.command, sendd_message_dict),
+            CommandHandler("cancel", cancel),
+            ]
+            #, pattern='^([a-z])$'
+        },
+        
+        fallbacks=[CommandHandler('help', help)],
+    )
         
     number_quiz = ConversationHandler (
         entry_points=[CommandHandler('practicenumber', voicetele)],
@@ -83,58 +77,60 @@ def main():
         states={
             voc: [MessageHandler(Filters.text, answer_with_voice)],
             # quizans : [MessageHandler(Filters.text, quiztele)],
-            Quizroutes:
-            [CallbackQueryHandler(answer_with_voice, pattern="^" + str(voc) + "$"), 
-           
+            Quizroutes:[
+            CallbackQueryHandler(answer_with_voice, pattern="^" + str(voc) + "$"),
             CallbackQueryHandler(quiztele, pattern="^" + str(quizans) + "$"),
-            CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$")],    
+            # CommandHandler("cancel", cancel),
+            ],  # CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$")
+            # end_quiz:[
+            # CallbackQueryHandler(voicetele, pattern="^" + str(quizagain) + "$"), 
+            # CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$"),  
+            # ],          
         },
 
-        fallbacks=[CommandHandler('help', help)] ,
+        fallbacks=[CommandHandler('cancel', cancel)],
         )
 
     word_quiz = ConversationHandler (
         entry_points=[CommandHandler('practiceword', voicetelee)],
         # CommandHandler('quizvoice',answer_with_voice)
         states={
-            voc:
+            boc:
             [MessageHandler(Filters.text, answer_with_voice)],
             # quizans : [MessageHandler(Filters.text, quiztele)],
             Quizroutes: 
             [CallbackQueryHandler(answer_with_voice, pattern="^" + str(voc) + "$"), 
             # CallbackQueryHandler(voicetele, pattern="^" + str(quizagain) + "$"),
             CallbackQueryHandler(quiztele, pattern="^" + str(quizans) + "$"),
-            MessageHandler(Filters.regex('quizagain'), help),],
+            # MessageHandler(Filters.regex('quizagain'), help),
+            CommandHandler("cancel", cancel),],
+            # end_quiz:[
+            # CallbackQueryHandler(voicetelee, pattern="^" + str(quizagain) + "$"), 
+            # CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$"),  
+            # ]
 
         },
-        fallbacks=[CommandHandler('help', help)] ,)
+        fallbacks=[CommandHandler('cancel', cancel)], 
+        )
 
-    conv_handlerr = ConversationHandler(
-        entry_points=[CommandHandler("dictionary", dictitele)],
-        states={
-            out: [MessageHandler(Filters.text, sendd_message_dict)],
-            #, pattern='^([a-z])$'
-        },
-        
-        fallbacks=[MessageHandler(Filters.command, cancel)],
-    )
+   
     dispatcher.add_error_handler(error)
     dispatcher.add_handler(translator_conv)
     dispatcher.add_handler(number_quiz)
     dispatcher.add_handler(word_quiz)
-    dispatcher.add_handler(conv_handlerr)
+    dispatcher.add_handler(dictionary_conv)
 
-    PORT = int(os.environ.get('PORT', '8443'))
-    updater.start_webhook(listen="0.0.0.0",
-                          port=PORT,
-                          url_path=TOKEN,
-                          webhook_url='https://telegramtrans-app.herokuapp.com/'+TOKEN)
+    # PORT = int(os.environ.get('PORT', '8443'))
+    # updater.start_webhook(listen="0.0.0.0",
+    #                       port=PORT,
+    #                       url_path=TOKEN,
+    #                       webhook_url='https://telegramtrans-app.herokuapp.com/'+TOKEN)
 
-    logging.info(f"Start webhook mode on port PORT:{PORT}")
+    # logging.info(f"Start webhook mode on port PORT:{PORT}")
                         #   webhook_url='https://transanddict.herokuapp.com/'+TOKEN)
                         # to post https://api.telegram.org/bot5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U/setWebhook
 
-    # updater.start_polling()
+    updater.start_polling()
 
     updater.idle()
     # while True:

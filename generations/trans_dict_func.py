@@ -116,12 +116,18 @@ def dictionary(word):
     m = soup.find_all('span', class_='dtText')[:3]
 
     if m == []:
-        words = soup.find('p',class_='spelling-suggestion-text')
+
+        words = soup.find_all('p',class_='spelling-suggestions')[:2]
         dictt =  [w.text for w in words]
+        dictt.append("Try again, The word you've entered isn't in the dictionary maybe some suggestions shown above.")
     else:
-        dictt= [c.text.split(':')[1].strip() for c in m]
+        try:
+            dictt= [c.text.split(':')[1].strip() for c in m]
+        except:
+            dictt = [c.text.strip() for c in m]
 
     return (','.join(str(a)for a in dictt))
+    
 def wrong_answers_number():
     glob.glob("audio\*.mp3")
     return [file.split('\\')[1].split('.')[0] for file in glob.glob("audio\*.mp3")]

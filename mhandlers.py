@@ -6,37 +6,25 @@ import telebot
 import logging
 from telegram.ext import (
     DispatcherHandlerStop,
-    CommandHandler,
-    Updater,
-    MessageQueue,
-    MessageHandler,
-    Filters,
-    ExtBot,
-    Defaults,
-    ChatMemberHandler,
-    InlineQueryHandler,
-    CallbackContext,
-    CallbackQueryHandler,
-    PollHandler,
+    ContextTypes,
     ConversationHandler,
+    Updater,
+    ExtBot,
+    CallbackContext,
 )
 from telegram import (
+    ReplyKeyboardRemove,
     KeyboardButtonPollType,
     KeyboardButton,
-    ParseMode,
     Bot,
     Poll,
     Update,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
-    BotCommandScopeAllPrivateChats, 
-    BotCommandScopeChat,
-    BotCommandScopeAllGroupChats,
-    BotCommandScopeChatAdministrators,
     ReplyKeyboardMarkup
 )
 # from typing import Tuple, Dict, Any
-import schedule
+# import schedule
 import time
 import os
 
@@ -44,13 +32,15 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/
 
 
 logger = logging.getLogger(__name__)
+
 dictt_answers = wrong_answers_number()
 np.random.shuffle(dictt_answers)
 
 # with open('C:/Users/emreb/Documents/projects/secret/token.txt', 'r') as f:
 #     TOKEN = f.read()
 TOKEN = '5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U'
-IN, out, tolang, voc, quizans,Quizroutes,quizagain= range(7)
+IN, out, voc, boc, quizans,Quizroutes,quizagain = range(7)
+end_dict,end_trans,end_quiz= range(3)
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -72,7 +62,7 @@ def start(update: Update, context: CallbackContext):
 
     """Start the conversation and ask user for input."""
     update.message.reply_text(
-    """Hi! My name is Doctor LAng. You can go translation or dictionary
+    """Hi! My name is Translation Bot. You can go translation or dictionary
 moreover you can practice easy words and numbers""",)#reply_markup=markup
     # return tolang
 
@@ -101,6 +91,7 @@ def dictitele(update: Update, context: CallbackContext):
 def sendd_message_dict(update: Update, context: CallbackContext):
     replytext = dictionary(update.message.text)
     update.message.reply_text(replytext)
+    return end_dict
 
 def translatetele(update: Update, context : CallbackContext):
     # keyboard = [
@@ -145,6 +136,7 @@ def send_to_trans(update: Update, context: CallbackContext):
             Please try again but anyway\n '''
 
     update.message.reply_text(replytextt)
+    return end_trans
 
 def voicetele(update: Update, context: CallbackContext):
     replytext = '''So Here is the voice quiz give me the language code that you want to exercise then the level you want to train (1-3) \n
@@ -161,7 +153,7 @@ will  guess the right answer. Let's go! Ex: es'''
     m_id = update.message.message_id
 
     update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
-    return voc
+    return boc
 
 answers = {'number':'', }#'words':'' 
 
@@ -193,8 +185,8 @@ def answer_with_voice(update: Update, context: CallbackContext):
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0], reply_markup=reply_markup)
-    # send_message(update.message.chat.id, answers['number'][1])
+    # context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0], reply_markup=reply_markup)
+    context.bot.send_message(update.message.chat.id, answers['number'][1])
     return Quizroutes
 
 def quiztele(update: Update, context: CallbackContext):
@@ -221,7 +213,7 @@ def quiztele(update: Update, context: CallbackContext):
     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
 }
     context.bot_data.update(payload)
-    return Quizroutes
+    return end_quiz
 
 async def receive_quiz_answer(update: Update, context: CallbackContext) -> None:
     """Close quiz after three participants took it"""
@@ -241,7 +233,16 @@ def cancel(update, context):
     update.message.reply_text('Thank you! I hope we can talk again some day.\n')
     return ConversationHandler.END
     # DispatcherHandlerStop(state=help)
+# def done(update: Update, context: ContextTypes):
     
+#     """Display the gathered info and end the conversation."""
+#     user_data = context.user_data
+#     reply_markup=ReplyKeyboardRemove(),
+#     user_data.clear()
+#     return ConversationHandler.END
+
+
+
 def error(update, context):
     """Log Errors caused by Updates."""
     logging.warning('Update "%s" ', update)
