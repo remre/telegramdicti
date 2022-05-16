@@ -30,7 +30,7 @@ from telegram import (
 import time
 import os
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-cafc88105725.json'
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-cafc88105725.json'
 
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ np.random.shuffle(dictt_answers)
 
 # with open('C:/Users/emreb/Documents/projects/secret/token.txt', 'r') as f:
 #     TOKEN = f.read()
-TOKEN = '5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U'
+# TOKEN = '5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U'
 IN, out, voc, boc, quizans,Quizroutes,quizagain = range(7)
 end_dict,end_trans,end_quiz= range(3)
 

@@ -3,13 +3,33 @@ from googletrans import Translator
 import glob
 import numpy as np
 import re
+import json
 from random_word import RandomWords
 import os
 import inflect
 import requests
+
+from google.cloud import storage
+from google.oauth2 import service_account
 from bs4 import BeautifulSoup as bs
 # from .transanddicttry import number_level
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-e457ccfc6ca7.json'
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-e457ccfc6ca7.json'
+
+os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+# def get_credentials():
+#     credentials_json = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
+#     credentials = GoogleCredentials.from_json(credentials_json)
+#     if not credentials or credentials.invalid:
+#         flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
+#         flow.user_agent = APPLICATION_NAME
+#         if flags:
+#             credentials = tools.run_flow(flow, store, flags)
+#         else: # Needed only for compatibility with Python 2.6
+#             credentials = tools.run(flow, store)
+#         print('Storing credentials to ' + credential_path)
+#     return credentials 
+# get_credentials()
+# the json credentials stored as env variable
 
 class TransGoogle:
 
