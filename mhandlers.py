@@ -1,3 +1,5 @@
+from email import message
+from gc import callbacks
 from generations.trans_dict_func import TransGoogle,Translatet, dictionary,wrong_answers_number
 import numpy as np
 import glob
@@ -70,7 +72,10 @@ moreover you can practice easy words and numbers""",)#reply_markup=markup
 # @bot.message_handler(commands=['help'])
 def help(update: Update, context: CallbackContext):
     """Send a message when the command /help is issued."""
-    update.message.reply_text(m_help)
+    # update.message.reply_text(m_help)
+    # update.message.sender_chat_id = update.message.chat_id
+    
+    context.bot.send_message(chat_id=update.message.chat_id, text=m_help)
     
 
 
@@ -142,17 +147,29 @@ def voicetele(update: Update, context: CallbackContext):
     replytext = '''So Here is the voice quiz give me the language code that you want to exercise then the level you want to train (1-3) \n
 I will send you the voice then you
 will  guess the right answer. Let's go! Ex: es 3'''
-    m_id = update.message.message_id
+    # m_id = update.message.message_id  reply_text  reply_to_message_id=m_id,
+    try:
+        m_id = update.message.message_id
 
-    update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
+        update.message.reply_text(replytext,reply_to_message_id = m_id)#reply_markup=markup
+    except:
+        update
     return voc
 def voicetelee(update: Update, context: CallbackContext):
     replytext = '''So Here is the voice quiz give me the language code that you want to test in word skills \n
 I will send you the voice then you
 will  guess the right answer. Let's go! Ex: es'''
-    m_id = update.message.message_id
 
-    update.message.reply_text(replytext, reply_to_message_id=m_id,)#reply_markup=markup
+    # m_id = update.message.message_id
+
+    # update.message.reply_text(str(m_id),message_id = m_id)
+    try:
+        m_id = update.message.message_id
+
+        update.message.reply_text(replytext,reply_to_message_id = m_id)
+    except:
+        pass
+    #reply_markup=markup
     return boc
 
 answers = {'number':'', }#'words':'' 
@@ -177,6 +194,8 @@ def answer_with_voice(update: Update, context: CallbackContext):
         new_word = TransGoogle(dest)
         new_word_voice = new_word.create_audio_file()
         answers['number'] = new_word_voice
+    else:
+        context.bot.send_message(chat_id=update.message.chat.id, text="You are giving wrong input\n please try again")
     # context.bot.send_message(chat_id=update.message.chat.id, text=answers['number'][1])
     keyboard = [
         [
@@ -184,9 +203,9 @@ def answer_with_voice(update: Update, context: CallbackContext):
             InlineKeyboardButton("go to question", callback_data=str(quizans)),
         ]
     ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    # context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0], reply_markup=reply_markup)
-    context.bot.send_message(update.message.chat.id, answers['number'][1])
+    reply_markup = InlineKeyboardMarkup(keyboard)    
+    context.bot.send_audio(chat_id=update.message.chat.id, audio=answers['number'][0],reply_markup=reply_markup )
+    # context.bot.send_message(update.message.chat.id, answers['number'][1])
     return Quizroutes
 
 def quiztele(update: Update, context: CallbackContext):
@@ -204,7 +223,7 @@ def quiztele(update: Update, context: CallbackContext):
     keyboard = [
         [
             InlineKeyboardButton("Again!!", callback_data=str(quizagain)),
-            InlineKeyboardButton("Enough!", callback_data=str(exit)),
+            InlineKeyboardButton("Enough!",callback_data=str(exit)),#, callback_data=str(exit)
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -213,24 +232,45 @@ def quiztele(update: Update, context: CallbackContext):
     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
 }
     context.bot_data.update(payload)
-    return end_quiz
+    # return end_quiz
+
+
 
 async def receive_quiz_answer(update: Update, context: CallbackContext) -> None:
     """Close quiz after three participants took it"""
+    message = update.effective_message
     # the bot can receive closed poll updates we don't care about
     if update.poll.is_closed:
         return
     if update.poll.total_voter_count == 1:
         try:
+
             quiz_data = context.bot_data[update.poll.id]
+            chat_id = quiz_data["chat_id"]
+            
         # this means this poll answer update is from an old poll, we can't stop it then
         except KeyError:
             return
-        await context.bot.stop_poll(quiz_data["chat_id"], quiz_data["message_id"])
+    await context.bot.stop_poll(quiz_data["chat_id"], quiz_data["message_id"])
+
+def handle_midlle_message(update,context):
+
+    update.message.reply_text("You are not supposed text give me some commands")
+    # return 
 
 def cancel(update, context):
     ''' to cancel the conversation'''
-    update.message.reply_text('Thank you! I hope we can talk again some day.\n')
+    reply_text='Thank you! I hope we can talk again some day.\n'
+    try:
+        m_id = update.message.message_id
+        update.message.reply_text(reply_text,message_id = m_id)
+    except:
+        pass
+        # mes_id = update.inline_message_id
+        # pass
+        # context.bot.send_message(text=reply_text)
+        # Bot.answer_inline_query(update.inline_query.id, [], cache_time=1)
+    
     return ConversationHandler.END
     # DispatcherHandlerStop(state=help)
 # def done(update: Update, context: ContextTypes):

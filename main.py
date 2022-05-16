@@ -84,14 +84,15 @@ def main():
             ],  # CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$")
             # end_quiz:[
             # CallbackQueryHandler(voicetele, pattern="^" + str(quizagain) + "$"), 
-            # CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$"),  
+            # CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$"),
+            # CommandHandler("cancel", cancel),  
             # ],          
         },
 
         fallbacks=[CommandHandler('cancel', cancel)],
         )
 
-    word_quiz = ConversationHandler (
+    word_quiz = ConversationHandler (allow_reentry=True,
         entry_points=[CommandHandler('practiceword', voicetelee)],
         # CommandHandler('quizvoice',answer_with_voice)
         states={
@@ -99,22 +100,26 @@ def main():
             [MessageHandler(Filters.text, answer_with_voice)],
             # quizans : [MessageHandler(Filters.text, quiztele)],
             Quizroutes: 
-            [CallbackQueryHandler(answer_with_voice, pattern="^" + str(voc) + "$"), 
+            [CallbackQueryHandler(help, pattern="^" + str(voc) + "$"), 
             # CallbackQueryHandler(voicetele, pattern="^" + str(quizagain) + "$"),
             CallbackQueryHandler(quiztele, pattern="^" + str(quizans) + "$"),
+            
             # MessageHandler(Filters.regex('quizagain'), help),
-            CommandHandler("cancel", cancel),],
+            CommandHandler("cancel", cancel),
+            ],
             # end_quiz:[
-            # CallbackQueryHandler(voicetelee, pattern="^" + str(quizagain) + "$"), 
-            # CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$"),  
+            # CallbackQueryHandler(two, pattern="^" + str(exit) + "$"),
+            # MessageHandler(Filters.regex('quizagain'), voicetel),
+            # MessageHandler(Filters.regex('exit'), cancel),
+            # CommandHandler("cancel", cancel), 
             # ]
 
         },
         fallbacks=[CommandHandler('cancel', cancel)], 
         )
 
-   
-    dispatcher.add_error_handler(error)
+    # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command , handle_midlle_message))
+    dispatcher.add_error_handler(error) 
     dispatcher.add_handler(translator_conv)
     dispatcher.add_handler(number_quiz)
     dispatcher.add_handler(word_quiz)

@@ -63,9 +63,9 @@ class TransGoogle:
         response = client.synthesize_speech(
             request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
         )
-        with open('C:/Users/emreb/Documents/projects/telegramdicti/audio/QuizQuestion.mp3', 'wb') as out:
+        # with open('C:/Users/emreb/Documents/projects/telegramdicti/audio/QuizQuestion.mp3', 'wb') as out:
         # Write the response to the output file.
-            out.write(response.audio_content)
+            # out.write(response.audio_content)
         return open('C:/Users/emreb/Documents/projects/telegramdicti/audio/QuizQuestion.mp3', 'rb'), text
 
     
@@ -131,7 +131,7 @@ def dictionary(word):
 def wrong_answers_number():
     glob.glob("audio\*.mp3")
     return [file.split('\\')[1].split('.')[0] for file in glob.glob("audio\*.mp3")]
-  
+
 def wrong_answers_word():
     pass
 class Translatet:
