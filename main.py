@@ -38,7 +38,7 @@ def main():
     dispatcher.add_handler(PollHandler(receive_quiz_answer,pass_chat_data=True, pass_user_data=True)) 
     
 
-    translator_conv = ConversationHandler (
+    translator_conv = ConversationHandler(
         entry_points=[CommandHandler('translate', translatetele)],
 
         states={
@@ -46,7 +46,8 @@ def main():
                 MessageHandler(Filters.text & ~Filters.command , send_to_trans),#& ~Filters.command  
                 # CommandHandler("cancel", cancel)
                 ],
-            end_trans : [
+            end_trans: 
+            [
                 MessageHandler(Filters.text & ~Filters.command , send_to_trans),
                 CommandHandler('cancel',cancel),
             ],
@@ -58,26 +59,29 @@ def main():
         entry_points=[CommandHandler("dictionary", dictitele)],
         states={
             out: [
-            MessageHandler(Filters.text & ~Filters.command, sendd_message_dict),# & ~Filters.command
+                MessageHandler(Filters.text & ~Filters.command, sendd_message_dict),# & ~Filters.command
             # CommandHandler("cancel", cancel),
             ],
-            end_dict: [
-            MessageHandler(Filters.text & ~Filters.command, sendd_message_dict),
-            CommandHandler("cancel", cancel),
+            end_dict: 
+            [
+                MessageHandler(Filters.text & ~Filters.command, sendd_message_dict),
+                CommandHandler("cancel", cancel),
             ]
             #, pattern='^([a-z])$'
         },
         
-        fallbacks=[CommandHandler('help', help)],
+        fallbacks=[
+            CommandHandler('help', help)],
     )
-        
+
     number_quiz = ConversationHandler (
         entry_points=[CommandHandler('practicenumber', voicetele)],
 
         states={
             voc: [MessageHandler(Filters.text, answer_with_voice)],
             # quizans : [MessageHandler(Filters.text, quiztele)],
-            Quizroutes:[
+            Quizroutes:
+            [
             CallbackQueryHandler(answer_with_voice, pattern="^" + str(voc) + "$"),
             CallbackQueryHandler(quiztele, pattern="^" + str(quizans) + "$"),
             # CommandHandler("cancel", cancel),
@@ -100,21 +104,21 @@ def main():
             [MessageHandler(Filters.text, answer_with_voice)],
             # quizans : [MessageHandler(Filters.text, quiztele)],
             Quizroutes: 
-            [CallbackQueryHandler(help, pattern="^" + str(voc) + "$"), 
+            [CallbackQueryHandler(help, pattern="^" + str(boc) + "$"), 
             # CallbackQueryHandler(voicetele, pattern="^" + str(quizagain) + "$"),
             CallbackQueryHandler(quiztele, pattern="^" + str(quizans) + "$"),
             
             # MessageHandler(Filters.regex('quizagain'), help),
             CommandHandler("cancel", cancel),
             ],
-            end_quiz:[
+            end_quiz:
+            [
             # CallbackQueryHandler(cancel),
             CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$"),
             CallbackQueryHandler(voicetelee, pattern="^" + str('quizagain') + "$"),
             # MessageHandler(Filters.regex('exit'), cancel),
             # CommandHandler("cancel", cancel), 
-            ]
-
+            ],
         },
         fallbacks=[CommandHandler('cancel', cancel)], 
         )
