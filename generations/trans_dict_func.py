@@ -9,8 +9,8 @@ import os
 import inflect
 import requests
 
-from google.cloud import storage
-from google.oauth2 import service_account
+# from google.cloud import storage
+# from google.oauth2 import service_account
 from bs4 import BeautifulSoup as bs
 # from .transanddicttry import number_level
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-e457ccfc6ca7.json'
