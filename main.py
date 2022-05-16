@@ -107,12 +107,13 @@ def main():
             # MessageHandler(Filters.regex('quizagain'), help),
             CommandHandler("cancel", cancel),
             ],
-            # end_quiz:[
-            # CallbackQueryHandler(two, pattern="^" + str(exit) + "$"),
-            # MessageHandler(Filters.regex('quizagain'), voicetel),
+            end_quiz:[
+            # CallbackQueryHandler(cancel),
+            CallbackQueryHandler(cancel, pattern="^" + str(exit) + "$"),
+            CallbackQueryHandler(voicetelee, pattern="^" + str('quizagain') + "$"),
             # MessageHandler(Filters.regex('exit'), cancel),
             # CommandHandler("cancel", cancel), 
-            # ]
+            ]
 
         },
         fallbacks=[CommandHandler('cancel', cancel)], 
@@ -125,17 +126,17 @@ def main():
     dispatcher.add_handler(word_quiz)
     dispatcher.add_handler(dictionary_conv)
 
-    # PORT = int(os.environ.get('PORT', '8443'))
-    # updater.start_webhook(listen="0.0.0.0",
-    #                       port=PORT,
-    #                       url_path=TOKEN,
-    #                       webhook_url='https://telegramtrans-app.herokuapp.com/'+TOKEN)
+    PORT = int(os.environ.get('PORT', '8443'))
+    updater.start_webhook(listen="0.0.0.0",
+                          port=PORT,
+                          url_path=TOKEN,
+                          webhook_url='https://telegramtrans-app.herokuapp.com/'+TOKEN)
 
     # logging.info(f"Start webhook mode on port PORT:{PORT}")
                         #   webhook_url='https://transanddict.herokuapp.com/'+TOKEN)
                         # to post https://api.telegram.org/bot5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U/setWebhook
 
-    updater.start_polling()
+    # updater.start_polling()
 
     updater.idle()
     # while True:

@@ -168,7 +168,10 @@ will  guess the right answer. Let's go! Ex: es'''
 
         update.message.reply_text(replytext,reply_to_message_id = m_id)
     except:
-        pass
+        dat = update.callback_query.data
+        if dat == 'quizagain':
+            update.callback_query.answer()
+            update.callback_query.edit_message_text(text=replytext)
     #reply_markup=markup
     return boc
 
@@ -232,7 +235,7 @@ def quiztele(update: Update, context: CallbackContext):
     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
 }
     context.bot_data.update(payload)
-    # return end_quiz
+    return end_quiz
 
 
 
@@ -262,16 +265,27 @@ def cancel(update, context):
     ''' to cancel the conversation'''
     reply_text='Thank you! I hope we can talk again some day.\n'
     try:
-        m_id = update.message.message_id
-        update.message.reply_text(reply_text,message_id = m_id)
+        cqd = update.callback_query.data
+        if cqd == str(exit):
+            update.callback_query.answer()
+            update.callback_query.send_message(text=reply_text)
+            return ConversationHandler.END
     except:
-        pass
-        # mes_id = update.inline_message_id
-        # pass
-        # context.bot.send_message(text=reply_text)
-        # Bot.answer_inline_query(update.inline_query.id, [], cache_time=1)
+        update.message.reply_text(reply_text)
+        return ConversationHandler.END
+    # try:
+    # # m_id = update.message.message_id
+    #     update.message.reply_text(reply_text)
+    # except:
+        
+    #     if cqd == 'exit':
+    # #     pass
+    #     # mes_id = update.inline_message_id
+    #     # pass
+    #     # context.bot.send_message(text=reply_text)
+    #     # Bot.answer_inline_query(update.inline_query.id, [], cache_time=1)
     
-    return ConversationHandler.END
+    # return ConversationHandler.END
     # DispatcherHandlerStop(state=help)
 # def done(update: Update, context: ContextTypes):
     
