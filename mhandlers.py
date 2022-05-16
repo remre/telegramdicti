@@ -230,7 +230,7 @@ def quiztele(update: Update, context: CallbackContext):
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    msg = update.effective_message.reply_poll(question,selections,type= Poll.QUIZ,correct_option_id=correct_id,reply_markup=reply_markup)
+    msg = update.effective_message.reply_poll(question,selections_deployed,type= Poll.QUIZ,correct_option_id=correct_id,reply_markup=reply_markup)
     payload = {
     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
 }
