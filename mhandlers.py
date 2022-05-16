@@ -217,11 +217,11 @@ def quiztele(update: Update, context: CallbackContext):
     number_answer = answers["number"][1]
     # question  = answers["number"][0]
     # level = update.message.text
-    selections = [dictt_answers[1],dictt_answers[2],dictt_answers[3], f'{number_answer}']
-    
-    np.random.shuffle(selections)
-    correct_id = selections.index(f'{number_answer}')
-    selections 
+    # selections = [dictt_answers[1],dictt_answers[2],dictt_answers[3], f'{number_answer}']
+    selections_deployed= ['saman','duman','yaman', f'{number_answer}']
+    np.random.shuffle(selections_deployed)
+    correct_id = selections_deployed.index(f'{number_answer}')
+    selections_deployed 
     question = 'what is the answer?'
     keyboard = [
         [

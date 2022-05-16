@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup as bs
 # from .transanddicttry import number_level
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:/Users/emreb/Documents/projects/secret/projecttelebotapi-e457ccfc6ca7.json'
 
-os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+os.environ['GOOGLE_APPLICATION_CREDENTIALS']
 # def get_credentials():
 #     credentials_json = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
 #     credentials = GoogleCredentials.from_json(credentials_json)
@@ -83,7 +83,7 @@ class TransGoogle:
         response = client.synthesize_speech(
             request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
         )
-        with open('/QuizQuestion.mp3', 'wb') as out: #C:/Users/emreb/Documents/projects/telegramdicti/audio
+        with open('QuizQuestion.mp3', 'wb') as out: #C:/Users/emreb/Documents/projects/telegramdicti/audio
             # Write the response to the output file.
                 out.write(response.audio_content)
         return open('QuizQuestion.mp3', 'rb'), text #C:/Users/emreb/Documents/projects/telegramdicti/audio/
