@@ -94,6 +94,8 @@ class TransGoogle:
         response = client.synthesize_speech(
             request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
         )
+        if os.path.exists("audio/QuizQuestion.mp3"):
+            os.remove("audio/QuizQuestion.mp3")
         with open('audio/QuizQuestion.mp3', 'wb') as out: #C:/Users/emreb/Documents/projects/telegramdicti/audio
             # Write the response to the output file.
                 out.write(response.audio_content)

@@ -6,15 +6,16 @@ import numpy as np
 import random 
 import glob
 
+def number_gen(destlang):
+    file_object = open(f'w_seltexts/{destlang}1.txt', 'a',errors='ignore')
+    for number in range(1,100):
+        p = inflect.engine()
+        numberr = p.number_to_words(number)
+        translator = Translator()
+        translated_t_answer = translator.translate(text=numberr, dest=destlang)
+        file_object.write('\n'+translated_t_answer.text)
 
-# file_object = open('w_seltexts/de1.txt', 'a')
-# for number in range(1,100):
-#     p = inflect.engine()
-#     numberr = p.number_to_words(number)
-#     translator = Translator()
-#     translated_t_answer = translator.translate(text=numberr, dest='de')
-#     file_object.write('\n'+translated_t_answer.text)
-
+number_gen('el')
 # file = [file.split('\\')[1].split('.')[0] for file in glob.glob("w_seltexts\*.txt")]
 # print(file) 
 
@@ -28,8 +29,8 @@ import glob
 #     destlang = destlang
 
 # print(destlang)
-value = [] 
-{value.append(file.split('\\')[1].split('.')[0]) for file in glob.glob("w_seltexts\*.txt")}
-if 'id' in value:
-    print('file not found')
+# value = [] 
+# {value.append(file.split('\\')[1].split('.')[0]) for file in glob.glob("w_seltexts\*.txt")}
+# if 'id' in value:
+#     print('file not found')
  
