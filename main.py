@@ -43,14 +43,14 @@ def main():
 
         states={
             IN: [
-                MessageHandler(Filters.text & ~Filters.command , send_to_trans),#& ~Filters.command  
+                MessageHandler(Filters.text , send_to_trans),#& ~Filters.command  
                 # CommandHandler("cancel", cancel)
                 ],
-            end_trans: 
+            end_trans:
             [
-                MessageHandler(Filters.text & ~Filters.command , send_to_trans),
-                CommandHandler('cancel',cancel),
-            ],
+                MessageHandler(Filters.text, send_to_trans),
+                MessageHandler(Filters.regex('cancel'),cancel),
+            ], 
         },
        fallbacks=[CommandHandler('help', help)],
         )
@@ -131,16 +131,16 @@ def main():
     dispatcher.add_handler(dictionary_conv)
 
     PORT = int(os.environ.get('PORT', '8443'))
-    updater.start_webhook(listen="0.0.0.0",
-                          port=PORT,
-                          url_path=TOKEN,
-                          webhook_url='https://telegramtrans-app.herokuapp.com/'+TOKEN)
+    # updater.start_webhook(listen="0.0.0.0",
+    #                       port=PORT,
+    #                       url_path=TOKEN,
+    #                       webhook_url='https://telegramtrans-app.herokuapp.com/'+TOKEN)
 
     # logging.info(f"Start webhook mode on port PORT:{PORT}")
                         #   webhook_url='https://transanddict.herokuapp.com/'+TOKEN)
                         # to post https://api.telegram.org/bot5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U/setWebhook
 
-    # updater.start_polling()
+    updater.start_polling()
 
     updater.idle()
     # while True:

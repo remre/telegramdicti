@@ -1,6 +1,6 @@
 from email import message
 from gc import callbacks
-from generations.trans_dict_func import TransGoogle,Translatet, dictionary,wrong_answers_number
+from generations.trans_dict_func import TransGoogle,Translatet, dictionary,wrong_answers
 import numpy as np
 import glob
 
@@ -35,8 +35,8 @@ import os
 
 logger = logging.getLogger(__name__)
 
-dictt_answers = wrong_answers_number()
-np.random.shuffle(dictt_answers)
+# dictt_answers = wrong_answers()
+# np.random.shuffle(dictt_answers)
 
 # with open('C:/Users/emreb/Documents/projects/secret/token.txt', 'r') as f:
 #     TOKEN = f.read()
@@ -136,12 +136,12 @@ def send_to_trans(update: Update, context: CallbackContext):
   
             trial = Translatet(textlack,dest)
             replytextt = "this is not proper usage but maybe this is the translation you desire\n" + trial.translatetext()
-        except Exception as e:
+        except Exception:
             replytextt = '''You are doing wrong\n
             Please try again but anyway\n '''
 
     update.message.reply_text(replytextt)
-    return end_trans
+    return ConversationHandler.END
 
 def voicetele(update: Update, context: CallbackContext):
     replytext = '''So Here is the voice quiz give me the language code that you want to exercise then the level you want to train (1-3) \n
@@ -175,8 +175,8 @@ will  guess the right answer. Let's go! Ex: es'''
     #reply_markup=markup
     return boc
 
-answers = {'number':'', }#'words':'' 
-
+answers = {'number': '', }#'words':'' 
+w_answer = {'w_ans':''}
 def answer_with_voice(update: Update, context: CallbackContext):
     global answers
     m_id = update.message.message_id
@@ -186,18 +186,24 @@ def answer_with_voice(update: Update, context: CallbackContext):
         if len(textt[0]) == 2:
             hardness = textt[1].strip()
             dest = textt[0].lower().strip()
+            
             new_number = TransGoogle(dest,hardness)
+            
             new_voice = new_number.create_audio_file()
             answers['number'] = new_voice
+            w_answer['w_ans'] = wrong_answers(answers['number'][1],dest,hardness)
         else:
             context.bot.send_message(chat_id=update.message.chat.id, text="You need to give the language code and the level check the example\n and try again!")
             return voc
     if len(textt) == 1 and len(textt[0]) == 2:
+        
         dest = textt[0].lower().strip()
         new_word = TransGoogle(dest)
+        
         new_word_voice = new_word.create_audio_file()
         answers['number'] = new_word_voice
-    else:
+        w_answer['w_ans'] = wrong_answers(answers['number'][1],dest)
+    elif len(textt) == 1 and len(textt[0]) == 4:
         context.bot.send_message(chat_id=update.message.chat.id, text="You are giving wrong input\n please try again")
     # context.bot.send_message(chat_id=update.message.chat.id, text=answers['number'][1])
     keyboard = [
@@ -212,21 +218,22 @@ def answer_with_voice(update: Update, context: CallbackContext):
     return Quizroutes
 
 def quiztele(update: Update, context: CallbackContext):
-    global answers, dictt_answers
+    global answers, w_answer
 
     number_answer = answers["number"][1]
+    ww_anss= w_answer["w_ans"]
     # question  = answers["number"][0]
     # level = update.message.text
     # selections = [dictt_answers[1],dictt_answers[2],dictt_answers[3], f'{number_answer}']
-    selections_deployed= ['saman','duman','yaman', f'{number_answer}']
+    selections_deployed= [f'{ww_anss[0]}',f'{ww_anss[1]}',f'{ww_anss[2]}', f'{number_answer}']
     np.random.shuffle(selections_deployed)
     correct_id = selections_deployed.index(f'{number_answer}')
     selections_deployed 
     question = 'what is the answer?'
     keyboard = [
         [
-            InlineKeyboardButton("Again!!", callback_data=str(quizagain)),
-            InlineKeyboardButton("Enough!",callback_data=str(exit)),#, callback_data=str(exit)
+            InlineKeyboardButton("Not working atm!!", callback_data=str(quizagain)),
+            InlineKeyboardButton("Not working atm!",callback_data=str(exit)),#, callback_data=str(exit)
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -235,7 +242,7 @@ def quiztele(update: Update, context: CallbackContext):
     msg.poll.id: {"chat_id": update.effective_chat.id, "message_id": msg.message_id}
 }
     context.bot_data.update(payload)
-    return end_quiz
+    return ConversationHandler.END
 
 
 

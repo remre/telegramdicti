@@ -8,6 +8,7 @@ from random_word import RandomWords
 import os
 import inflect
 import requests
+import random
 
 # from google.cloud import storage
 # from google.oauth2 import service_account
@@ -30,6 +31,16 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS']
 #     return credentials 
 # get_credentials()
 # the json credentials stored as env variable
+
+
+
+# file_object = open('w_seltexts/de3.txt', 'a')
+# for number in range(1000,10000,3):
+#     p = inflect.engine()
+#     numberr = p.number_to_words(number)
+#     translator = Translator()
+#     translated_t_answer = translator.translate(text=numberr, dest='de')
+#     file_object.write('\n'+translated_t_answer.text)
 
 class TransGoogle:
 
@@ -83,10 +94,10 @@ class TransGoogle:
         response = client.synthesize_speech(
             request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
         )
-        with open('QuizQuestion.mp3', 'wb') as out: #C:/Users/emreb/Documents/projects/telegramdicti/audio
+        with open('audio/QuizQuestion.mp3', 'wb') as out: #C:/Users/emreb/Documents/projects/telegramdicti/audio
             # Write the response to the output file.
                 out.write(response.audio_content)
-        return open('QuizQuestion.mp3', 'rb'), text #C:/Users/emreb/Documents/projects/telegramdicti/audio/
+        return open('audio/QuizQuestion.mp3', 'rb'), text #C:/Users/emreb/Documents/projects/telegramdicti/audio/
 
     
 
@@ -152,8 +163,29 @@ def wrong_answers_number():
     glob.glob("audio\*.mp3")
     return [file.split('\\')[1].split('.')[0] for file in glob.glob("audio\*.mp3")]
 
-def wrong_answers_word():
-    pass
+def wrong_answers(ttta,destlang='de',hardness=None):
+    wrong_answers = []
+    value = [] 
+    {value.append(file.split('\\')[1].split('.')[0]) for file in glob.glob("w_seltexts\*.txt")} 
+    if destlang in value:
+        destlang = destlang
+        
+    else:
+        destlang ='de'
+    if hardness != None:
+        with open(f'w_seltexts/{destlang}{hardness}.txt', 'r') as f:
+           lines = f.readlines()
+    else:
+        with open(f'w_seltexts/{destlang}.txt', 'r') as f:
+            lines = f.readlines()
+    for line in lines:
+        if line[:2]==ttta[:2]:
+                if len(ttta)+1 >=len(line)>=len(ttta)-1:
+                    wrong_answers.append(line.strip())
+                else:
+                    wrong_answers.append(line.strip()) 
+    return random.choices(wrong_answers,k =3)
+
 class Translatet:
     def __init__(self,text, *args):
         self.text = text
@@ -173,9 +205,11 @@ class Translatet:
     def __str__(self):
         return f'{self.text}'
 
-# new_word = TransGoogle('es')
+new_word = TransGoogle('es',2).create_audio_file()
+print(new_word)
+w_answer = wrong_answers(new_word[1],'de')
 # trial = Translatet('wilkommen','tr')
-# print(trial.translatetext())
+# new_voice = trial.translatetext()
 # print(new_voice)
 
 # r_word = RandomWords()
