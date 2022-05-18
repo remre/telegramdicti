@@ -205,9 +205,9 @@ class Translatet:
     def __str__(self):
         return f'{self.text}'
 
-new_word = TransGoogle('es',2).create_audio_file()
-print(new_word)
-w_answer = wrong_answers(new_word[1],'de')
+# new_word = TransGoogle('es',2).create_audio_file()
+# print(new_word)
+# w_answer = wrong_answers(new_word[1],'de')
 # trial = Translatet('wilkommen','tr')
 # new_voice = trial.translatetext()
 # print(new_voice)
