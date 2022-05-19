@@ -1,6 +1,9 @@
-this bot has quiz, dictionary and translate commands
-for dictionary merriam webster is used
-for the transaltion Google API is using
+This bot has quiz, dictionary and translate commands
+
+For dictionary merriam webster is used
+
+For the transaltion Google API is using
+
 Quizzes include simple word or number exercises in any language that send voice message and user needs to guess the right answer
 
 let's begin!
