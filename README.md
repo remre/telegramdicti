@@ -1,4 +1,4 @@
-This bot has quiz, dictionary and translate commands
+This bot has quiz, dictionary and translate commands. You can try it yourself! @traildictbot
 
 For dictionary merriam webster is used
 
