@@ -9,6 +9,7 @@ import os
 import inflect
 import requests
 import random
+import unicodedata
 
 # from google.cloud import storage
 # from google.oauth2 import service_account
@@ -61,7 +62,11 @@ class TransGoogle:
         # self.level_number = self.number_level(str(self.number))
         # if type(word) == str:
         #     self.word = word
-        
+    def unicodeToAscii(s):
+        return ''.join(
+        c for c in unicodedata.normalize('NFD', s)
+        if unicodedata.category(c) != 'Mn'
+    )
    
     def generate_random_word(self):
         r_word = RandomWords()
@@ -75,7 +80,7 @@ class TransGoogle:
         level_number = number_level(str(self.number))
         p = inflect.engine()
         return p.number_to_words(level_number)
-   
+    
     
     def create_audio_file(self):
         translator = Translator()
@@ -206,6 +211,8 @@ class Translatet:
         return result.text
     def __str__(self):
         return f'{self.text}'
+
+    
 
 # new_word = TransGoogle('es',2).create_audio_file()
 # print(new_word)
