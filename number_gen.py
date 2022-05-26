@@ -30,6 +30,7 @@ def wrong_answers(ttta,destlang='de',hardness=None):
         if destlang+str(hardness) in value:
             with open(f'w_seltexts/{destlang}{hardness}.txt', 'r', errors='replace') as f:
                 lines = f.readlines()
+                print(lines[:4])
         else:
             with open(f'w_seltexts/{destlang}.txt', 'r', errors='replace') as f:
                 lines = f.readlines()
@@ -44,7 +45,7 @@ def wrong_answers(ttta,destlang='de',hardness=None):
                     wrong_answers.append(line.strip()) 
     return random.choices(wrong_answers,k =3)
 
-co = wrong_answers('sesenta y dos', 'es', 1)
+co = wrong_answers('vingt-trois', 'fr',)
 print(co)
 # number_gen('el')
 # file = [file.split('\\')[1].split('.')[0] for file in glob.glob("w_seltexts\*.txt")]

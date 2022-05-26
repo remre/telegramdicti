@@ -62,11 +62,7 @@ class TransGoogle:
         # self.level_number = self.number_level(str(self.number))
         # if type(word) == str:
         #     self.word = word
-    def unicodeToAscii(s):
-        return ''.join(
-        c for c in unicodedata.normalize('NFD', s)
-        if unicodedata.category(c) != 'Mn'
-    )
+    
    
     def generate_random_word(self):
         r_word = RandomWords()
@@ -100,7 +96,10 @@ class TransGoogle:
             request={"input": synthesis_input, "voice": voice, "audio_config": audio_config}
         )
         if os.path.exists("audio/QuizQuestion.mp3"):
-            os.remove("audio/QuizQuestion.mp3")
+            try:
+                os.remove("audio/QuizQuestion.mp3")
+            except:
+                pass
         with open('audio/QuizQuestion.mp3', 'wb') as out: #C:/Users/emreb/Documents/projects/telegramdicti/audio
             # Write the response to the output file.
                 out.write(response.audio_content)
@@ -170,6 +169,13 @@ def wrong_answers_number():
     glob.glob("audio\*.mp3")
     return [file.split('\\')[1].split('.')[0] for file in glob.glob("audio\*.mp3")]
 
+
+def unicodeToAscii(s):
+        return ''.join(
+        c for c in unicodedata.normalize('NFD', s)
+        if unicodedata.category(c) != 'Mn'
+    )
+
 def wrong_answers(ttta,destlang='de',hardness=None):
     wrong_answers = []
     value = [] 
@@ -194,7 +200,8 @@ def wrong_answers(ttta,destlang='de',hardness=None):
                 if len(ttta)+1 >=len(line)>=len(ttta)-1:
                     wrong_answers.append(line.strip())
                 else:
-                    wrong_answers.append(line.strip()) 
+                    wrong_answers.append(line.strip())
+    wrong_answers = [unicodeToAscii(w_a) for w_a in wrong_answers]
     return random.choices(wrong_answers,k =3)
 
 class Translatet:
@@ -217,7 +224,8 @@ class Translatet:
         return f'{self.text}'
 
     
-
+# co = wrong_answers('traulichere', 'it', '1')
+# print(co)
 # new_word = TransGoogle('es',2).create_audio_file()
 # print(new_word)
 # w_answer = wrong_answers(new_word[1],'de')

@@ -1,6 +1,6 @@
 from email import message
 from gc import callbacks
-from generations.trans_dict_func import TransGoogle,Translatet, dictionary,wrong_answers
+from trans_dict_func import TransGoogle,Translatet, dictionary,wrong_answers
 import numpy as np
 import glob
 
