@@ -15,7 +15,38 @@ def number_gen(destlang):
         translated_t_answer = translator.translate(text=numberr, dest=destlang)
         file_object.write('\n'+translated_t_answer.text)
 
-number_gen('el')
+
+
+def wrong_answers(ttta,destlang='de',hardness=None):
+    wrong_answers = []
+    value = [] 
+    {value.append(file.split('\\')[1].split('.')[0]) for file in glob.glob("w_seltexts\*.txt")} 
+    if destlang in value:
+        destlang = destlang
+        
+    else:
+        destlang ='de'
+    if hardness != None:
+        if destlang+str(hardness) in value:
+            with open(f'w_seltexts/{destlang}{hardness}.txt', 'r', errors='replace') as f:
+                lines = f.readlines()
+        else:
+            with open(f'w_seltexts/{destlang}.txt', 'r', errors='replace') as f:
+                lines = f.readlines()
+    else:
+        with open(f'w_seltexts/{destlang}.txt', 'r', errors='replace') as f:
+            lines = f.readlines()
+    for line in lines:
+        if line[:2]==ttta[:2]:
+                if len(ttta)+1 >=len(line)>=len(ttta)-1:
+                    wrong_answers.append(line.strip())
+                else:
+                    wrong_answers.append(line.strip()) 
+    return random.choices(wrong_answers,k =3)
+
+co = wrong_answers('sesenta y dos', 'es', 1)
+print(co)
+# number_gen('el')
 # file = [file.split('\\')[1].split('.')[0] for file in glob.glob("w_seltexts\*.txt")]
 # print(file) 
 

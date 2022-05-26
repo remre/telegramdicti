@@ -180,8 +180,12 @@ def wrong_answers(ttta,destlang='de',hardness=None):
     else:
         destlang ='de'
     if hardness != None:
-        with open(f'w_seltexts/{destlang}{hardness}.txt', 'r', errors='replace') as f:
-           lines = f.readlines()
+        if destlang+str(hardness) in value:
+            with open(f'w_seltexts/{destlang}{hardness}.txt', 'r', errors='replace') as f:
+                lines = f.readlines()
+        else:
+            with open(f'w_seltexts/{destlang}.txt', 'r', errors='replace') as f:
+                lines = f.readlines()
     else:
         with open(f'w_seltexts/{destlang}.txt', 'r', errors='replace') as f:
             lines = f.readlines()
