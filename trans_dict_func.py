@@ -179,7 +179,7 @@ def unicodeToAscii(s):
 def wrong_answers(ttta,destlang='de',hardness=None):
     wrong_answers = []
     value = [] 
-    {value.append(file.split('\\')[1].split('.')[0]) for file in glob.glob("w_seltexts/*.txt")} 
+    {value.append(file.split('\\')[1].split('.')[0]) for file in glob.glob("w_seltexts\*.txt")} 
     if destlang in value:
         destlang = destlang
         
@@ -187,10 +187,10 @@ def wrong_answers(ttta,destlang='de',hardness=None):
         destlang ='de'
     if hardness != None:
         if destlang+str(hardness) in value:
-            with open(f'w_seltexts/{destlang}{hardness}.txt', 'r', errors='replace') as f:
+            with open(f'w_seltexts\{destlang}{hardness}.txt', 'r', errors='replace') as f:
                 lines = f.readlines()
         else:
-            with open(f'w_seltexts/{destlang}.txt', 'r', errors='replace') as f:
+            with open(f'w_seltexts\{destlang}.txt', 'r', errors='replace') as f:
                 lines = f.readlines()
     else:
         with open(f'w_seltexts/{destlang}.txt', 'r', errors='replace') as f:
