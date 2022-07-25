@@ -25,7 +25,7 @@ from telegram import (
 from mhandlers import *
 
 
-# TOKEN = '5390988406:AAGZpy9maBTXPphCxwNdqRjTib3uLCrme4U'
+
 TOKEN = os.environ.get('TOKEN')
 def main():
     """Main."""
